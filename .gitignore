@@ -1,0 +1,8 @@
+.vscode/*.log
+.note.local
+.freesound.key
+.freesound.oauth.key
+demo.json
+zicGranular
+config.cfg
+list_pulse
