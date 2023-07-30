@@ -61,12 +61,16 @@ protected:
         for (unsigned int i = 0; i < deviceCount; i++) {
             rtInfo = audioOutput->getDeviceInfo(i);
             if (rtInfo.probed == true) {
-                // APP_PRINT(" (%d) %s", i, rtInfo.name.c_str());
-                // APP_PRINT("  (chan: %d, sampleRate: %d)\n", rtInfo.outputChannels, rtInfo.preferredSampleRate);
-                APP_PRINT(" (%d) %s [AUDIO_OUTPUT=%s]\n", i, rtInfo.name.c_str(), rtInfo.name.c_str());
+                APP_PRINT(" (%d) %s\n", i, rtInfo.name.c_str());
+                if (rtInfo.outputChannels) {
+                    APP_PRINT("   [AUDIO_OUTPUT=%s]\n", rtInfo.name.c_str());
+                }
+                if (rtInfo.inputChannels) {
+                    APP_PRINT("   [AUDIO_INPUT=%s]\n", rtInfo.name.c_str());
+                }
+                APP_PRINT("\n");
             }
         }
-        APP_PRINT("\n");
     }
 
     unsigned int getAudioDeviceId(char* name)
