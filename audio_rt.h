@@ -14,14 +14,23 @@ int audioCallback(void* outputBuffer, void* /*inputBuffer*/, unsigned int nBuffe
     return 0;
 }
 
+int audioInputCallback(void* outputBuffer, void* /*inputBuffer*/, unsigned int nBufferFrames,
+    double /*streamTime*/, RtAudioStreamStatus status, void* data)
+{
+    // audioHandler.samples((float*)outputBuffer, nBufferFrames * APP_CHANNELS);
+    return 0;
+}
+
 class AudioRT : public AudioApi {
 protected:
     RtAudio* audioOutput = 0;
+    RtAudio* audioInput = 0;
 
     static AudioRT* instance;
     AudioRT()
     {
         audioOutput = new RtAudio();
+        audioInput = new RtAudio();
     }
 
     const char* getApiName()
@@ -105,16 +114,21 @@ public:
     {
         APP_PRINT("RT audio::open\n");
 
-        RtAudio::StreamParameters audioParams;
+        RtAudio::StreamParameters audioOutputParams;
+        RtAudio::StreamParameters audioInputParams;
 
         // TODO should sample rate come from RtAudio::DeviceInfo  ?
         unsigned int bufferFrames = APP_AUDIO_CHUNK;
-        audioParams.deviceId = getAudioDeviceId(audioOutputName);
-        audioParams.nChannels = APP_CHANNELS;
+        audioOutputParams.deviceId = getAudioDeviceId(audioOutputName);
+        audioOutputParams.nChannels = APP_CHANNELS;
+        audioInputParams.deviceId = getAudioDeviceId(audioInputName);
+        audioInputParams.nChannels = APP_CHANNELS;
         try {
-            audioOutput->openStream(&audioParams, NULL, RTAUDIO_FLOAT32, SAMPLE_RATE, &bufferFrames, &audioCallback);
+            audioOutput->openStream(&audioOutputParams, NULL, RTAUDIO_FLOAT32, SAMPLE_RATE, &bufferFrames, &audioCallback);
             audioOutput->startStream();
-            while (audioOutput->isStreamRunning()) {
+            audioInput->openStream(&audioInputParams, NULL, RTAUDIO_FLOAT32, SAMPLE_RATE, &bufferFrames, &audioInputCallback);
+            audioInput->startStream();
+            while (audioOutput->isStreamRunning() && audioInput->isStreamRunning()) {
                 usleep(100000); // 100ms
             }
         } catch (RtAudioError& e) {

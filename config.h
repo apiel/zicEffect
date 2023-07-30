@@ -46,6 +46,9 @@ void assignKeyValue(char* key, char* value)
     } else if (strcmp(key, "AUDIO_OUTPUT") == 0) {
         strcpy(audioOutputName, value);
         APP_INFO("Audio output set: %s\n", audioOutputName);
+    } else if (strcmp(key, "AUDIO_INPUT") == 0) {
+        strcpy(audioInputName, value);
+        APP_INFO("Audio input set: %s\n", audioInputName);
     } else if (strcmp(key, "GAIN_OUTPUT") == 0) {
         setMasterVolume(masterVolume, atof(value));
         APP_INFO("Gain output set: %f\n", gainOutput);

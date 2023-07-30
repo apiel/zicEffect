@@ -63,6 +63,7 @@ void enableDebug()
 }
 
 char audioOutputName[255] = "";
+char audioInputName[255] = "";
 float gainOutput = 1.0f;
 float masterVolume = 1.0f;
 float masterVolumeWithGain = gainOutput * masterVolume;
