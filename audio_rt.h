@@ -10,51 +10,23 @@ AudioHandler& audioHandler = AudioHandler::get();
 int audioCallback(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames,
     double /*streamTime*/, RtAudioStreamStatus status, void* data)
 {
-    // audioHandler.samples((float*)outputBuffer, nBufferFrames * APP_CHANNELS);
-
-    // float* buf = (float*)inputBuffer;
-    // for (int i = 0; i < nBufferFrames * APP_CHANNELS; i++) {
-    //     printf("%f\n", buf[i]);
-    // }
-
-    for (int i = 0; i < nBufferFrames * APP_CHANNELS; i++) {
-        ((float*)outputBuffer)[i] = ((float*)inputBuffer)[i];
-    }
-    return 0;
-}
-
-int audioInputCallback(void* /*outputBuffer*/, void* inputBuffer, unsigned int nBufferFrames,
-    double /*streamTime*/, RtAudioStreamStatus status, void* data)
-{
-    // audioHandler.inputSamples((float*)inputBuffer, nBufferFrames * APP_CHANNELS);
-
-    // float* buf = (float*)inputBuffer;
-    // printf("nBufferFrames: %d\n", nBufferFrames);
-    // float yo = buf[0];
-    // // printf("%f\n", buf[0]);
-
-    // for (int i = 0; i < nBufferFrames * APP_CHANNELS; i++) {
-    //     printf("%f\n", buf[i]);
-    // }
-
+    audioHandler.samples((float*)inputBuffer, (float*)outputBuffer, nBufferFrames * APP_CHANNELS);
     return 0;
 }
 
 class AudioRT : public AudioApi {
 protected:
-    RtAudio* audioOutput = 0;
-    RtAudio* audioInput = 0;
+    RtAudio* audio = 0;
 
     static AudioRT* instance;
     AudioRT()
     {
-        audioOutput = new RtAudio();
-        audioInput = new RtAudio();
+        audio = new RtAudio();
     }
 
     const char* getApiName()
     {
-        switch (audioOutput->getCurrentApi()) {
+        switch (audio->getCurrentApi()) {
         case RtAudio::UNSPECIFIED:
             return "UNSPECIFIED";
         case RtAudio::LINUX_ALSA:
@@ -82,12 +54,12 @@ protected:
 
     void showAudioDeviceInfo()
     {
-        unsigned int deviceCount = audioOutput->getDeviceCount();
+        unsigned int deviceCount = audio->getDeviceCount();
 
         APP_PRINT("Found %d audio devices (%s):\n\n", deviceCount, getApiName());
         RtAudio::DeviceInfo rtInfo;
         for (unsigned int i = 0; i < deviceCount; i++) {
-            rtInfo = audioOutput->getDeviceInfo(i);
+            rtInfo = audio->getDeviceInfo(i);
             if (rtInfo.probed == true) {
                 APP_PRINT(" (%d) %s\n", i, rtInfo.name.c_str());
                 if (rtInfo.outputChannels) {
@@ -103,11 +75,11 @@ protected:
 
     unsigned int getAudioDeviceId(char* name)
     {
-        unsigned int deviceCount = audioOutput->getDeviceCount();
+        unsigned int deviceCount = audio->getDeviceCount();
 
         RtAudio::DeviceInfo rtInfo;
         for (unsigned int i = 0; i < deviceCount; i++) {
-            rtInfo = audioOutput->getDeviceInfo(i);
+            rtInfo = audio->getDeviceInfo(i);
             if (rtInfo.probed == true) {
                 if (rtInfo.name.find(name) != std::string::npos) {
                     return i;
@@ -115,7 +87,7 @@ protected:
             }
         }
         debug("/!\\ Warning /!\\ Audio device %s not found\n", name);
-        rtInfo = audioOutput->getDeviceInfo(0);
+        rtInfo = audio->getDeviceInfo(0);
         debug("Using default %s device [%s]\n", getApiName(), rtInfo.name.c_str());
         return 0;
     }
@@ -133,22 +105,18 @@ public:
     {
         APP_PRINT("RT audio::open\n");
 
-        RtAudio::StreamParameters audioOutputParams;
+        RtAudio::StreamParameters audioParams;
         RtAudio::StreamParameters audioInputParams;
 
-        // TODO should sample rate come from RtAudio::DeviceInfo  ?
         unsigned int bufferFrames = APP_AUDIO_CHUNK;
-        audioOutputParams.deviceId = getAudioDeviceId(audioOutputName);
-        audioOutputParams.nChannels = APP_CHANNELS;
+        audioParams.deviceId = getAudioDeviceId(audioOutputName);
+        audioParams.nChannels = APP_CHANNELS;
         audioInputParams.deviceId = getAudioDeviceId(audioInputName);
         audioInputParams.nChannels = APP_CHANNELS;
         try {
-            audioOutput->openStream(&audioOutputParams, &audioInputParams, RTAUDIO_FLOAT32, SAMPLE_RATE, &bufferFrames, &audioCallback);
-            audioOutput->startStream();
-            // audioInput->openStream(&audioInputParams, NULL, RTAUDIO_FLOAT32, SAMPLE_RATE, &bufferFrames, &audioInputCallback);
-            // audioInput->startStream();
-            // while (audioOutput->isStreamRunning() && audioInput->isStreamRunning()) {
-            while (audioOutput->isStreamRunning()) {
+            audio->openStream(&audioParams, &audioInputParams, RTAUDIO_FLOAT32, SAMPLE_RATE, &bufferFrames, &audioCallback);
+            audio->startStream();
+            while (audio->isStreamRunning()) {
                 usleep(100000); // 100ms
             }
         } catch (RtAudioError& e) {
