@@ -55,16 +55,12 @@ protected:
     }
 
 public:
-    int16_t value = 0;
     float resonance = 0.0;
     uint8_t mode = FILTER_MODE_OFF;
 
-    uint16_t maxHPF = 2000; // 7250;
-    uint16_t maxLPF = 5500; // 7250;
-
     Filter()
     {
-        set(value);
+        set(0.5);
     };
 
     float sample(float inputValue)
@@ -72,77 +68,20 @@ public:
         return sample(inputValue, cutoff);
     }
 
-    Filter& set(int16_t val)
-    {
-        value = range(val, -maxLPF, maxHPF);
-        int16_t frequency = value;
-        if (value == 0) {
-            mode = FILTER_MODE_OFF;
-        } else if (value > 0) {
-            mode = FILTER_MODE_HIGHPASS_12;
-            frequency = frequency + 50;
-        } else {
-            mode = FILTER_MODE_LOWPASS_12;
-            frequency = (maxLPF + 500) - (frequency * -1 + 40);
-        }
-
-        cutoff = 2.0 * sin(M_PI * frequency / SAMPLE_RATE); // lookup table?? js: Array.from(Array(7350).keys()).map(frequency => 2.0 * Math.sin(3.141592653589793238 * frequency / 44100));
-
-        // printf("Filter: %d -> %d cutoff %f\n", value, frequency, cutoff);
-
-        calculateVar();
-
-        debug("Filter: value=%d cutoff=%f\n", value, cutoff);
-
-        return *this;
-    }
-
-    /**
-     * @brief set filter cutoff
-     *
-     * @param value where 0.0 is 7250Hz LPF, 0.5 is no filter, 1.0 is 7250Hz HPF
-     * @return Filter&
-     */
-    // Filter& set(float value) {
-    //     int16_t val = range(value, 0.0, 1.0) * (maxHPF + maxLPF) - maxLPF;
-    //     return set(val);
-    // }
-
-    // Filter& set(float value)
-    // {
-    //     if (value == 0.5) {
-    //         mode = FILTER_MODE_OFF;
-    //     } else if (value > 0.5) {
-    //         mode = FILTER_MODE_HIGHPASS_12;
-    //         // 0 to 0.27
-    //         cutoff = 0.27 * ((value - 0.5) * 2);
-    //     } else {
-    //         mode = FILTER_MODE_LOWPASS_12;
-    //         // From 0.95 to 0.1
-    //         cutoff = 0.85 * (value * 2) + 0.1;
-    //     }
-
-    //     debug("Filter (%f): cutoff=%f\n", value, cutoff);
-    //     calculateVar();
-    //     return *this;
-    // }
-
-    float center = 0.75;
-
     Filter& set(float value)
     {
-        if (value == center) {
+        if (value == 0.5) {
             mode = FILTER_MODE_OFF;
-        } else if (value > center) {
+        } else if (value > 0.5) {
             mode = FILTER_MODE_HIGHPASS_12;
-            // 0 to 0.27
-            cutoff = 0.27 * ((value -center) * (1 / (1 - center)));
+            // 0 to 0.10
+            cutoff = 0.10 * ((value - 0.5) * 2);
         } else {
             mode = FILTER_MODE_LOWPASS_12;
             // From 0.95 to 0.1
-            cutoff = 0.85 * (value * (1 / center)) + 0.1;
+            cutoff = 0.85 * (value * 2) + 0.1;
         }
-           
+
         debug("Filter (%f): cutoff=%f\n", value, cutoff);
         calculateVar();
         return *this;
