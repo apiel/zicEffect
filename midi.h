@@ -11,6 +11,7 @@ RtMidiIn midiController;
 MidiMapping midiMappings[] = {
     MidiMapping("GRAIN_START_POSITION", [](float value) {
         // AudioHandler::get().audioGranular.setStart(value);
+        AudioHandler::get().filter.set(value);
     }),
     MidiMapping("GRAIN_DENSIY", [](float value) {
         // AudioHandler::get().audioGranular.setDensity(value);
@@ -37,13 +38,13 @@ MidiMapping midiMappings[] = {
         // ...
     }),
     MidiMapping("DISTORTION", [](float value) {
-        // AudioHandler::get().distortion.set(value);
+        AudioHandler::get().distortion.set(value);
     }),
     MidiMapping("FILTER_CUTOFF", [](float value) {
-        // AudioHandler::get().filter.set(value);
+        AudioHandler::get().filter.set(value);
     }),
     MidiMapping("FILTER_RESONANCE", [](float value) {
-        // AudioHandler::get().filter.setResonance(value);
+        AudioHandler::get().filter.setResonance(value);
     }),
 };
 
