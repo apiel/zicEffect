@@ -5,6 +5,7 @@
 #include "def.h"
 #include "signalsmith-stretch/signalsmith-stretch.h"
 
+// still not so good maybe better to pitch down directly the gear with midi
 // seem we can pitch bend digitone with [225,39,100] and [225,39,0]
 
 class PitchShifter {
