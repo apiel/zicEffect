@@ -5,8 +5,7 @@
 #include "def.h"
 #include "distortion.h"
 #include "filter.h"
-// #include "granular.h"
-#include "signalsmith-stretch/signalsmith-stretch.h"
+#include "pitchShifter.h"
 
 class AudioHandler {
 protected:
@@ -15,20 +14,14 @@ protected:
     // Keep buffer for echo, delay, granular, etc.
     AudioBuffer buffer;
 
-    signalsmith::stretch::SignalsmithStretch<float> stretch;
-
     AudioHandler()
     {
-        stretch.presetDefault(APP_CHANNELS, SAMPLE_RATE);
-        stretch.setTransposeSemitones(12);
     }
 
 public:
     Filter filter;
     Distortion distortion;
-    // Granular granular;
-
-    uint8_t stepCounter = 0;
+    PitchShifter pitchShifter;
 
     static AudioHandler& get()
     {
@@ -45,13 +38,25 @@ public:
             buffer.addSample(out[i], i);
         }
 
-        stretch.process(&buffer.input, len, &out, len);
-
-        // for (int i = 0; i < len; i++) {
-        //     out[i] = bufferOut[i];
+        // if (pitchShifter.on) {
+        //     pitchShifter.stretch.process(&buffer.input, len, &out, len);
+        //     if (pitchShifter.ramp < 1.0) {
+        //         pitchShifter.ramp += 0.01;
+        //     }
+        //     for (int i = 0; i < len; i++) {
+        //         out[i] = out[i] * pitchShifter.ramp + buffer.input[i] * (1 - pitchShifter.ramp);
+        //     }
+        // } else {
+        //     if (pitchShifter.ramp > 0.0) {
+        //         pitchShifter.ramp -= 0.01;
+        //         pitchShifter.stretch.process(&buffer.input, len, &out, len);
+        //         for (int i = 0; i < len; i++) {
+        //             out[i] = out[i] * pitchShifter.ramp + buffer.input[i] * (1 - pitchShifter.ramp);
+        //         }
+        //     }
         // }
 
-        // granular.samples(buffer, out, len);
+        pitchShifter.samples(out, len);
     }
 };
 

@@ -30,6 +30,10 @@ MidiMapping midiMappings[] = {
     }),
     MidiMapping("ENV_ATTACK", [](float value) {
         // AudioHandler::get().audioGranular.setAttack(value);
+        int8_t val = (value * 127) - 64;
+
+        printf("Pitch shifting %d\n", val);
+        AudioHandler::get().pitchShifter.setTransposeSemitones(val);
     }),
     MidiMapping("ENV_RELEASE", [](float value) {
         // AudioHandler::get().audioGranular.setRelease(value);
@@ -60,11 +64,15 @@ void midiControllerCallback(double deltatime, std::vector<unsigned char>* messag
         // uint8_t channel = message->at(0) - 0x90;
         // if (channel == midiNodeChannel) {
             // AudioHandler::get().granular.noteOn(message->at(1), message->at(2));
+            AudioHandler::get().pitchShifter.on = message->at(2) > 0;
+            printf("transpose %d\n", AudioHandler::get().pitchShifter.on);
         // }
     } else if (message->at(0) >= 0x80 && message->at(0) < 0x90) {
         // uint8_t channel = message->at(0) - 0x80;
         // if (channel == midiNodeChannel) {
             // AudioHandler::get().granular.noteOff(message->at(1), message->at(2));
+            AudioHandler::get().pitchShifter.on = false;
+            printf("transpose off\n");
         // }
     } else {
         for (int i = 0; i < MIDI_MAPS; i++) {
