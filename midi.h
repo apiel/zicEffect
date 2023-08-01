@@ -58,13 +58,13 @@ void midiControllerCallback(double deltatime, std::vector<unsigned char>* messag
         // ignore active sensing
     } else if (message->at(0) >= 0x90 && message->at(0) < 0xa0) {
         // uint8_t channel = message->at(0) - 0x90;
-        // if (channel == midiSequencerChannel) {
-        //     AudioHandler::get().audioGranular.noteOn(message->at(1), message->at(2));
+        // if (channel == midiNodeChannel) {
+            AudioHandler::get().granular.noteOn(message->at(1), message->at(2));
         // }
     } else if (message->at(0) >= 0x80 && message->at(0) < 0x90) {
         // uint8_t channel = message->at(0) - 0x80;
-        // if (channel == midiSequencerChannel) {
-        //     AudioHandler::get().audioGranular.noteOff(message->at(1), message->at(2));
+        // if (channel == midiNodeChannel) {
+            AudioHandler::get().granular.noteOff(message->at(1), message->at(2));
         // }
     } else {
         for (int i = 0; i < MIDI_MAPS; i++) {

@@ -4,7 +4,8 @@
 # default
 CC=g++ -o zicEffect
 
-LIDSND=`pkg-config --cflags --libs sndfile`
+# not used yet
+# LIDSND=`pkg-config --cflags --libs sndfile`
 
 RTAUDIO=`pkg-config --cflags --libs rtaudio`
 
