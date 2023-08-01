@@ -1,11 +1,12 @@
 #ifndef _AUDIO_HANDLER_H_
 #define _AUDIO_HANDLER_H_
 
+#include "audioBuffer.h"
 #include "def.h"
 #include "distortion.h"
 #include "filter.h"
-#include "audioBuffer.h"
-#include "granular.h"
+// #include "granular.h"
+#include "signalsmith-stretch/signalsmith-stretch.h"
 
 class AudioHandler {
 protected:
@@ -14,14 +15,18 @@ protected:
     // Keep buffer for echo, delay, granular, etc.
     AudioBuffer buffer;
 
+    signalsmith::stretch::SignalsmithStretch<float> stretch;
+
     AudioHandler()
     {
+        stretch.presetDefault(APP_CHANNELS, SAMPLE_RATE);
+        stretch.setTransposeSemitones(12);
     }
 
 public:
     Filter filter;
     Distortion distortion;
-    Granular granular;
+    // Granular granular;
 
     uint8_t stepCounter = 0;
 
@@ -33,13 +38,20 @@ public:
         return *instance;
     }
 
-    void samples(float* in, float * out, int len)
+    void samples(float* in, float* out, int len)
     {
         for (int i = 0; i < len; i++) {
             out[i] = distortion.sample(filter.sample(in[i]));
-            buffer.addSample(out[i]);
+            buffer.addSample(out[i], i);
         }
-        granular.samples(buffer, out, len);
+
+        stretch.process(&buffer.input, len, &out, len);
+
+        // for (int i = 0; i < len; i++) {
+        //     out[i] = bufferOut[i];
+        // }
+
+        // granular.samples(buffer, out, len);
     }
 };
 
