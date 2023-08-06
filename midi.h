@@ -31,7 +31,7 @@ MidiMapping midiMappings[] = {
     }),
     MidiMapping("ENV_ATTACK", [](float value) {
         // AudioHandler::get().audioGranular.setAttack(value);
-        AudioHandler::get().sampleRateReducer.set(value * 127);
+        AudioHandler::get().sampleRateReducer.set(value);
         printf("sampleStep %d\n", AudioHandler::get().sampleRateReducer.sampleStep);
     }),
     MidiMapping("ENV_RELEASE", [](float value) {

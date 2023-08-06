@@ -40,9 +40,9 @@ public:
         set(sampleStep);
     };
 
-    EffectSampleRateReducer set(uint8_t _sampleStep)
+    EffectSampleRateReducer set(float value)
     {
-        sampleStep = _sampleStep;
+        sampleStep = value * 127;
         if (sampleStep == 0) {
             samplePtr = &EffectSampleRateReducer::skipSample;
             debug("SampleRateReducer: disabled\n");
