@@ -39,8 +39,6 @@ public:
             out[i] = sampleRateReducer.sample(out[i]);
             buffer.addSample(out[i], i);
         }
-
-        // sampleRateReducer.samples(out, len);
     }
 };
 
