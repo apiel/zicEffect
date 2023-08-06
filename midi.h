@@ -31,9 +31,13 @@ MidiMapping midiMappings[] = {
     }),
     MidiMapping("ENV_ATTACK", [](float value) {
         // AudioHandler::get().audioGranular.setAttack(value);
+        AudioHandler::get().bitCrusher.sampleStep = value * 100;
+        printf("sampleStep %d\n", AudioHandler::get().bitCrusher.sampleStep);
     }),
     MidiMapping("ENV_RELEASE", [](float value) {
         // AudioHandler::get().audioGranular.setRelease(value);
+        AudioHandler::get().bitCrusher.crushBits = value * 16;
+        printf("crushBits %d\n", AudioHandler::get().bitCrusher.crushBits);
     }),
     MidiMapping("SAMPLE_SELECTOR", [](float value) {
         // ...

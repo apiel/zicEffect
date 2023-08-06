@@ -5,6 +5,7 @@
 #include "def.h"
 #include "effectDistortion.h"
 #include "effectFilter.h"
+#include "effectBitCrusher.h"
 
 class AudioHandler {
 protected:
@@ -20,6 +21,7 @@ protected:
 public:
     EffectFilter filter;
     EffectDistortion distortion;
+    EffectBitCrusher bitCrusher;
 
     static AudioHandler& get()
     {
@@ -35,6 +37,8 @@ public:
             out[i] = distortion.sample(filter.sample(in[i]));
             buffer.addSample(out[i], i);
         }
+
+        bitCrusher.samples(out, len);
     }
 };
 
