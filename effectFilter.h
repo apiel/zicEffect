@@ -1,5 +1,5 @@
-#ifndef _FILTER_H_
-#define _FILTER_H_
+#ifndef _EFFECT_FILTER_H_
+#define _EFFECT_FILTER_H_
 
 #include "def.h"
 
@@ -8,7 +8,7 @@
 // https://www.martin-finke.de/articles/audio-plugins-013-filter/
 // https://www.musicdsp.org/en/latest/Filters/29-resonant-filter.html
 
-class Filter {
+class EffectFilter {
 protected:
     enum FilterMode {
         FILTER_MODE_OFF,
@@ -58,7 +58,7 @@ public:
     float resonance = 0.0;
     uint8_t mode = FILTER_MODE_OFF;
 
-    Filter()
+    EffectFilter()
     {
         set(0.5);
     };
@@ -68,7 +68,7 @@ public:
         return sample(inputValue, cutoff);
     }
 
-    Filter& set(float value)
+    EffectFilter& set(float value)
     {
         if (value == 0.5) {
             mode = FILTER_MODE_OFF;
@@ -87,7 +87,7 @@ public:
         return *this;
     }
 
-    Filter& setResonance(float _res)
+    EffectFilter& setResonance(float _res)
     {
         resonance = range(_res, 0.00, 0.99);
         calculateVar();

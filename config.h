@@ -43,6 +43,8 @@ void assignKeyValue(char* key, char* value)
 {
     if (strcmp(key, "MIDIIN") == 0) {
         loadMidiInput(midiController, value, &midiControllerCallback);
+    } else if (strcmp(key, "MIDIOUT") == 0) {
+        loadMidiOutput(midiOut, value);
     } else if (strcmp(key, "AUDIO_OUTPUT") == 0) {
         strcpy(audioOutputName, value);
         APP_INFO("Audio output set: %s\n", audioOutputName);

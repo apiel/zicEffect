@@ -3,8 +3,8 @@
 
 #include "audioBuffer.h"
 #include "def.h"
-#include "distortion.h"
-#include "filter.h"
+#include "effectDistortion.h"
+#include "effectFilter.h"
 
 class AudioHandler {
 protected:
@@ -18,8 +18,8 @@ protected:
     }
 
 public:
-    Filter filter;
-    Distortion distortion;
+    EffectFilter filter;
+    EffectDistortion distortion;
 
     static AudioHandler& get()
     {

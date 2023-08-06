@@ -1,18 +1,18 @@
-#ifndef _DISTORTION_H_
-#define _DISTORTION_H_
+#ifndef _EFFECT_DISTORTION_H_
+#define _EFFECT_DISTORTION_H_
 
 #include "def.h"
 
 #include <math.h>
 
-class Distortion {
+class EffectDistortion {
 protected:
     float shape;
 
 public:
     float drive = 0.0;
 
-    Distortion()
+    EffectDistortion()
     {
         set(drive);
     };
@@ -25,7 +25,7 @@ public:
         return (1 + shape) * buf / (1 + shape * fabsf(buf));
     }
 
-    Distortion& set(float _drive)
+    EffectDistortion& set(float _drive)
     {
         drive = range(_drive, 0.0, 1.0);
         if (drive > 0.0) {
