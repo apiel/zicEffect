@@ -36,10 +36,11 @@ public:
         for (int i = 0; i < len; i++) {
             out[i] = filter.sample(in[i]);
             out[i] = distortion.sample(out[i]);
+            out[i] = sampleRateReducer.sample(out[i]);
             buffer.addSample(out[i], i);
         }
 
-        sampleRateReducer.samples(out, len);
+        // sampleRateReducer.samples(out, len);
     }
 };
 
