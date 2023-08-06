@@ -19,10 +19,6 @@ protected:
 
     float processSample(float buf)
     {
-        if (sampleStep <= 1) {
-            return buf;
-        }
-
         if (samplePosition == 0) {
             sampleSqueeze = buf;
         }
@@ -46,18 +42,14 @@ public:
 
     EffectSampleRateReducer set(uint8_t _sampleStep)
     {
-        if (_sampleStep == 0) {
-            sampleStep = 0;
+        sampleStep = _sampleStep;
+        if (sampleStep == 0) {
             samplePtr = &EffectSampleRateReducer::skipSample;
             debug("SampleRateReducer: disabled\n");
-            return *this;
+        } else {
+            samplePtr = &EffectSampleRateReducer::processSample;
+            debug("SampleRateReducer: sampleStep=%d\n", sampleStep);
         }
-
-        samplePtr = &EffectSampleRateReducer::processSample;
-        sampleStep = _sampleStep;
-
-        debug("SampleRateReducer: sampleStep=%d\n", sampleStep);
-
         return *this;
     }
 
