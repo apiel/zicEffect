@@ -34,7 +34,8 @@ public:
     void samples(float* in, float* out, int len)
     {
         for (int i = 0; i < len; i++) {
-            out[i] = distortion.sample(filter.sample(in[i]));
+            out[i] = filter.sample(in[i]);
+            out[i] = distortion.sample(out[i]);
             buffer.addSample(out[i], i);
         }
 
