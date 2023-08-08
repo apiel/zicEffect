@@ -38,6 +38,8 @@ public:
             out[i] = distortion.sample(out[i]);
             out[i] = sampleRateReducer.sample(out[i]);
             buffer.addSample(out[i], i);
+
+            out[i] *= masterVolumeWithGain;
         }
     }
 };
