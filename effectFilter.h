@@ -49,13 +49,16 @@ protected:
             return inputValue;
         }
 
-        buf0 += _cutoff * (inputValue - buf0 + feedback * (buf0 - buf1));
-        buf1 += _cutoff * (buf0 - buf1);
+        float hp = inputValue - buf0;
+        float bp = buf0 - buf1;
+
+        buf0 = buf0 + _cutoff * (hp + feedback * bp);
+        buf1 = buf1 + _cutoff * (buf0 - buf1);
 
         if (mode == FILTER_MODE_LOWPASS_12) {
             return buf1;
         }
-        return inputValue - buf0;
+        return hp;
     }
 
 public:
