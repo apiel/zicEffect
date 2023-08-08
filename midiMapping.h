@@ -37,7 +37,7 @@ public:
     {
         if (isValid(message)) {
             if (valuePosition == size) {
-                callback(message->at(valuePosition - 1) / 127.0f);
+                callback(message->at(valuePosition - 1) / 128.0f);
             } else {
                 callback(((message->at(2) << 7) + message->at(1)) / 16383.0f);
             }

@@ -42,7 +42,7 @@ public:
 
     EffectSampleRateReducer set(float value)
     {
-        sampleStep = value * 127;
+        sampleStep = value * 128.0;
         if (sampleStep == 0) {
             samplePtr = &EffectSampleRateReducer::skipSample;
             debug("SampleRateReducer: disabled\n");

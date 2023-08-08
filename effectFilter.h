@@ -75,14 +75,14 @@ public:
         } else if (value > 0.5) {
             mode = FILTER_MODE_HIGHPASS_12;
             // 0 to 0.10
-            cutoff = 0.10 * ((value - 0.5) * 2);
+            cutoff = (0.10 * ((value - 0.5) * 2)) + 0.00707;
         } else {
             mode = FILTER_MODE_LOWPASS_12;
             // From 0.95 to 0.1
             cutoff = 0.85 * (value * 2) + 0.1;
         }
 
-        debug("Filter (%f): cutoff=%f\n", value, cutoff);
+        debug("Filter (%f): cutoff=%f mode=%d\n", value, cutoff, mode);
         calculateVar();
         return *this;
     }
