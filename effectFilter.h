@@ -163,6 +163,9 @@ public:
         // Lowpass  output:  b4
         // Highpass output:  in - b4;
         // Bandpass output:  3.0f * (b3 - b4);
+        if (mode == FILTER_MODE_OFF) {
+            return inputValue;
+        }
         if (mode == FILTER_MODE_LOWPASS) {
             return b4;
         }
@@ -172,14 +175,12 @@ public:
     EffectFilterMoog& set(float value)
     {
         cutoff = range(value, 0.00, 1.00);
-        // LPF should be from 0.01 to 0.5
-        // if (value == 0.5) {
-        //     mode = FILTER_MODE_OFF;
-        // } else 
-        if (value > 0.5) {
+        if (value == 0.5) {
+            mode = FILTER_MODE_OFF;
+        } else if (value > 0.5) {
             mode = FILTER_MODE_HIGHPASS;
-            // 0 to 0.10
-            cutoff = value - 0.5;
+            // cutoff = value - 0.5;
+            cutoff = (value - 0.5) * 0.5; // x0.5 because doesn't need to remove so high freq
         } else {
             mode = FILTER_MODE_LOWPASS;
             cutoff = value + 0.01; // LPF should not be 0.0
