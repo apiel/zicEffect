@@ -5,10 +5,20 @@
 
 #include <math.h>
 
+class EffectFilterInterface {
+public:
+    float resonance = 0.0;
+    uint8_t mode = 0;
+
+    virtual float sample(float inputValue) = 0;
+    virtual EffectFilterInterface& set(float value) = 0;
+    virtual EffectFilterInterface& setResonance(float _res) = 0;
+};
+
 // https://www.martin-finke.de/articles/audio-plugins-013-filter/
 // https://www.musicdsp.org/en/latest/Filters/29-resonant-filter.html
 
-class EffectFilter {
+class EffectFilter: public EffectFilterInterface {
 protected:
     enum FilterMode {
         FILTER_MODE_OFF,
@@ -21,7 +31,7 @@ protected:
     float cutoff = 0.99;
     float feedback;
 
-    // Should we take care of channel separation?
+    // NOTE Should we take care of channel separation?
     float buf0 = 0;
     float buf1 = 0;
 
