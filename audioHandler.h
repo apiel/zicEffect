@@ -19,7 +19,8 @@ protected:
     }
 
 public:
-    EffectFilter filter;
+    // EffectFilter filter;
+    EffectFilterMoog filter;
     EffectDistortion distortion;
     EffectSampleRateReducer sampleRateReducer;
 
