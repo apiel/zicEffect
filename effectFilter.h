@@ -171,12 +171,10 @@ public:
     {
         mix = range(value, 0.00, 1.00);
         if (value > 0.5) {
-            // cutoff = value - 0.5;
-            cutoff = (value - 0.5) * 0.5; // x0.5 because doesn't need to remove so high freq
+            cutoff = 1 - value + 0.0707;
         } else {
             cutoff = value + 0.01; // LPF should not be 0.0
         }
-        // cutoff = (value * 0.5) + 0.01;
         calculateVar(cutoff, resonance);
 
         // printf("LPF %f HPF %f\n", (1.0 - mix), mix);
