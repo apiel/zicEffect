@@ -3,6 +3,7 @@
 
 #include "audioBuffer.h"
 #include "def.h"
+#include "effectDelay.h"
 #include "effectDistortion.h"
 #include "effectFilter.h"
 #include "effectSampleRateReducer.h"
@@ -15,7 +16,13 @@ protected:
     AudioBuffer buffer;
 
     AudioHandler()
+        : delay(&buffer)
+        , delay2(&buffer)
+        , delay3(&buffer)
     {
+        delay.set(0.4, 0.7, 0.0);
+        delay2.set(0.8, 0.5, 0.0);
+        delay3.set(1.2, 0.3, 0.0);
     }
 
 public:
@@ -24,6 +31,9 @@ public:
     // EffectFilterMoog filter;
     EffectDistortion distortion;
     EffectSampleRateReducer sampleRateReducer;
+    EffectDelay delay;
+    EffectDelay delay2;
+    EffectDelay delay3;
 
     static AudioHandler& get()
     {
@@ -40,6 +50,10 @@ public:
             out[i] = distortion.sample(out[i]);
             out[i] = sampleRateReducer.sample(out[i]);
             buffer.addSample(out[i], i);
+
+            // out[i] += delay.sample();
+            // out[i] += delay2.sample();
+            // out[i] += delay3.sample();
 
             out[i] *= masterVolumeWithGain;
         }
