@@ -125,18 +125,11 @@ protected:
     void calculateVar(float _cutoff, float _resonance)
     {
         q = 1.0f - _cutoff;
-        // if (mix > 0.5) {
-        //     q = 1.0f - mix;
-        // }
         p = _cutoff + 0.8f * _cutoff * q;
         f = p + p - 1.0f;
-        // q = _resonance * (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
-
         q = _resonance * (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
 
-        // q = _resonance * 2;
-
-        printf("mix %f cutoff %f q=%f\n", mix, _cutoff, q);
+        // debug("mix %f cutoff %f q=%f\n", mix, _cutoff, q);
     }
 
 public:
@@ -176,8 +169,6 @@ public:
             cutoff = value + 0.05; // LPF should not be 0.0
         }
         calculateVar(cutoff, resonance);
-
-        // printf("LPF %f HPF %f\n", (1.0 - mix), mix);
         return *this;
     }
 
