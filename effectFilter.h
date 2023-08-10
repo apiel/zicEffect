@@ -17,18 +17,98 @@ public:
 // https://www.martin-finke.de/articles/audio-plugins-013-filter/
 // https://www.musicdsp.org/en/latest/Filters/29-resonant-filter.html
 
+class EffectFilterData {
+
+public:
+    float cutoff = 0.0f;
+    float feedback = 0.0f;
+    float buf0 = 0.0f;
+    float buf1 = 0.0f;
+    float hp = 0.0f;
+    float resonance = 0.0f;
+
+    void setCutoff(float _cutoff)
+    {
+        cutoff = _cutoff;
+        setResonance(resonance);
+    }
+
+    void setResonance(float _resonance)
+    {
+        resonance = _resonance;
+        if (resonance == 0.0f) {
+            feedback = 0.0f;
+            return;
+        }
+        feedback = resonance + resonance / (1.0 - cutoff);
+    }
+
+    void setSampleData(float inputValue)
+    {
+        hp = inputValue - buf0;
+        float bp = buf0 - buf1;
+
+        buf0 = buf0 + cutoff * (hp + feedback * bp);
+        buf1 = buf1 + cutoff * (buf0 - buf1);
+    }
+};
+
 class EffectFilter : public EffectFilterInterface {
 protected:
-    enum FilterMode {
-        FILTER_MODE_OFF,
-        FILTER_MODE_LOWPASS_12,
-        FILTER_MODE_HIGHPASS_12,
-        FILTER_MODE_COUNT,
+    EffectFilterData hpf;
+    EffectFilterData lpf;
+
+    float mix = 0.5;
+
+public:
+    float resonance = 0.0;
+
+    EffectFilter()
+    {
+        set(0.5);
     };
 
+    float sample(float inputValue)
+    {
+        if (inputValue == 0) {
+            return inputValue;
+        }
+
+        hpf.setSampleData(inputValue);
+        lpf.setSampleData(inputValue);
+
+        return lpf.buf1 * (1.0 - mix) + hpf.hp * mix;
+    }
+
+    EffectFilter& set(float value)
+    {
+        mix = range(value, 0.00, 1.00);
+
+        hpf.setCutoff((0.20 * value) + 0.00707);
+        lpf.setCutoff(0.85 * value + 0.1);
+
+        return *this;
+    }
+
+    EffectFilter& setResonance(float _res)
+    {
+        resonance = range(_res, 0.00, 0.99);
+        lpf.setResonance(resonance);
+        hpf.setResonance(resonance);
+
+        debug("Filter: resonance=%f\n", resonance);
+
+        return *this;
+    };
+};
+
+// another version of the same filter but with a small clicking at 0.5
+class EffectFilter2 : public EffectFilterInterface {
+protected:
     // cutoff cannot be 1.0 else div by zero range(_cutoff, 0.01, 0.99);
     float cutoff = 0.99;
     float feedback;
+    float mix = 0.5;
 
     // NOTE Should we take care of channel separation?
     float buf0 = 0;
@@ -48,11 +128,13 @@ protected:
 
         // cutoff cannot be 1.0 (should we ensure this?)
         feedback = _resonance + _resonance / (1.0 - _cutoff); // would it make sense to make a lookup table for `1.0 / (1.0 - _cutoff);` ?
+
+        debug("Mix (%f): cutoff=%f reso %f feedback %f\n", mix, cutoff, _resonance, feedback);
     }
 
     float sample(float inputValue, float _cutoff)
     {
-        if (mode == FILTER_MODE_OFF || inputValue == 0) {
+        if (inputValue == 0) {
             return inputValue;
         }
 
@@ -62,17 +144,13 @@ protected:
         buf0 = buf0 + _cutoff * (hp + feedback * bp);
         buf1 = buf1 + _cutoff * (buf0 - buf1);
 
-        if (mode == FILTER_MODE_LOWPASS_12) {
-            return buf1;
-        }
-        return hp;
+        return buf1 * (1.0 - mix) + hp * mix;
     }
 
 public:
     float resonance = 0.0;
-    uint8_t mode = FILTER_MODE_OFF;
 
-    EffectFilter()
+    EffectFilter2()
     {
         set(0.5);
     };
@@ -82,26 +160,30 @@ public:
         return sample(inputValue, cutoff);
     }
 
-    EffectFilter& set(float value)
+    EffectFilter2& set(float value)
     {
-        if (value == 0.5) {
-            mode = FILTER_MODE_OFF;
-        } else if (value > 0.5) {
-            mode = FILTER_MODE_HIGHPASS_12;
+        mix = range(value, 0.00, 1.00);
+
+         if (value > 0.5) {
             // 0 to 0.10
             cutoff = (0.10 * ((value - 0.5) * 2)) + 0.00707;
         } else {
-            mode = FILTER_MODE_LOWPASS_12;
             // From 0.95 to 0.1
             cutoff = 0.85 * (value * 2) + 0.1;
         }
 
-        debug("Filter (%f): cutoff=%f mode=%d\n", value, cutoff, mode);
+        // if (value > 0.5) {
+        //     cutoff = 1 - value + 0.0707;
+        // } else {
+        //     cutoff = value + 0.05; // LPF should not be 0.0
+        // }
+
+        // debug("Filter (%f): cutoff=%f\n", value, cutoff);
         calculateVar();
         return *this;
     }
 
-    EffectFilter& setResonance(float _res)
+    EffectFilter2& setResonance(float _res)
     {
         resonance = range(_res, 0.00, 0.99);
         calculateVar();
@@ -163,10 +245,10 @@ public:
     EffectFilterMoog& set(float value)
     {
         mix = range(value, 0.00, 1.00);
-        if (value > 0.5) {
-            cutoff = 1 - value + 0.0707;
+        if (mix > 0.5) {
+            cutoff = 1 - mix + 0.0707;
         } else {
-            cutoff = value + 0.05; // LPF should not be 0.0
+            cutoff = mix + 0.05; // LPF should not be 0.0
         }
         calculateVar(cutoff, resonance);
         return *this;
