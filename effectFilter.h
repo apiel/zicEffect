@@ -173,7 +173,7 @@ public:
         if (value > 0.5) {
             cutoff = 1 - value + 0.0707;
         } else {
-            cutoff = value + 0.01; // LPF should not be 0.0
+            cutoff = value + 0.05; // LPF should not be 0.0
         }
         calculateVar(cutoff, resonance);
 
@@ -183,7 +183,7 @@ public:
 
     EffectFilterMoog& setResonance(float _res)
     {
-        resonance = range(_res, 0.00, 1.00) * 0.85; // resonance should be from 0.0 to 0.85, higher values is too high
+        resonance = range(_res, 0.00, 1.00) * 0.90; // resonance should be from 0.0 to 0.90, higher values is too high
         calculateVar(cutoff, resonance);
         return *this;
     };
