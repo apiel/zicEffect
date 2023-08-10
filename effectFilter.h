@@ -8,7 +8,6 @@
 class EffectFilterInterface {
 public:
     float resonance = 0.0;
-    uint8_t mode = 0;
 
     virtual float sample(float inputValue) = 0;
     virtual EffectFilterInterface& set(float value) = 0;
@@ -117,29 +116,31 @@ public:
 // https://www.kvraudio.com/forum/viewtopic.php?t=144625
 class EffectFilterMoog : public EffectFilterInterface {
 protected:
-    enum FilterMode {
-        FILTER_MODE_OFF,
-        FILTER_MODE_LOWPASS,
-        FILTER_MODE_HIGHPASS,
-        FILTER_MODE_COUNT,
-    };
-
     float cutoff = 0.00;
     float f, p, q = 0.00;
     float b0, b1, b2, b3, b4 = 0.0;
     float t1, t2 = 0.0;
+    float mix = 0.5;
 
     void calculateVar(float _cutoff, float _resonance)
     {
         q = 1.0f - _cutoff;
+        // if (mix > 0.5) {
+        //     q = 1.0f - mix;
+        // }
         p = _cutoff + 0.8f * _cutoff * q;
         f = p + p - 1.0f;
+        // q = _resonance * (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
+
         q = _resonance * (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
+
+        // q = _resonance * 2;
+
+        printf("mix %f cutoff %f q=%f\n", mix, _cutoff, q);
     }
 
 public:
     float resonance = 0.0;
-    uint8_t mode = FILTER_MODE_OFF;
 
     EffectFilterMoog()
     {
@@ -162,29 +163,23 @@ public:
         // Lowpass  output:  b4
         // Highpass output:  in - b4;
         // Bandpass output:  3.0f * (b3 - b4);
-        if (mode == FILTER_MODE_OFF) {
-            return inputValue;
-        }
-        if (mode == FILTER_MODE_LOWPASS) {
-            return b4;
-        }
-        return inputValue - b4;
+
+        return b4 * (1.0 - mix) + (inputValue - b4) * mix;
     }
 
     EffectFilterMoog& set(float value)
     {
-        cutoff = range(value, 0.00, 1.00);
-        if (value == 0.5) {
-            mode = FILTER_MODE_OFF;
-        } else if (value > 0.5) {
-            mode = FILTER_MODE_HIGHPASS;
+        mix = range(value, 0.00, 1.00);
+        if (value > 0.5) {
             // cutoff = value - 0.5;
             cutoff = (value - 0.5) * 0.5; // x0.5 because doesn't need to remove so high freq
         } else {
-            mode = FILTER_MODE_LOWPASS;
             cutoff = value + 0.01; // LPF should not be 0.0
         }
+        // cutoff = (value * 0.5) + 0.01;
         calculateVar(cutoff, resonance);
+
+        // printf("LPF %f HPF %f\n", (1.0 - mix), mix);
         return *this;
     }
 
