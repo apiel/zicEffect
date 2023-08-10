@@ -103,49 +103,13 @@ public:
 };
 
 // another version of the same filter but with a small clicking at 0.5
+
 class EffectFilter2 : public EffectFilterInterface {
 protected:
-    // cutoff cannot be 1.0 else div by zero range(_cutoff, 0.01, 0.99);
-    float cutoff = 0.99;
-    float feedback;
+    EffectFilterData hpf;
+    EffectFilterData lpf;
+
     float mix = 0.5;
-
-    // NOTE Should we take care of channel separation?
-    float buf0 = 0;
-    float buf1 = 0;
-
-    void calculateVar()
-    {
-        calculateVar(cutoff, resonance);
-    }
-
-    void calculateVar(float _cutoff, float _resonance)
-    {
-        if (_resonance == 0.0f) {
-            feedback = 0.0f;
-            return;
-        }
-
-        // cutoff cannot be 1.0 (should we ensure this?)
-        feedback = _resonance + _resonance / (1.0 - _cutoff); // would it make sense to make a lookup table for `1.0 / (1.0 - _cutoff);` ?
-
-        debug("Mix (%f): cutoff=%f reso %f feedback %f\n", mix, cutoff, _resonance, feedback);
-    }
-
-    float sample(float inputValue, float _cutoff)
-    {
-        if (inputValue == 0) {
-            return inputValue;
-        }
-
-        float hp = inputValue - buf0;
-        float bp = buf0 - buf1;
-
-        buf0 = buf0 + _cutoff * (hp + feedback * bp);
-        buf1 = buf1 + _cutoff * (buf0 - buf1);
-
-        return buf1 * (1.0 - mix) + hp * mix;
-    }
 
 public:
     float resonance = 0.0;
@@ -157,36 +121,40 @@ public:
 
     float sample(float inputValue)
     {
-        return sample(inputValue, cutoff);
+        if (inputValue == 0) {
+            return inputValue;
+        }
+
+        hpf.setSampleData(inputValue);
+        lpf.setSampleData(inputValue);
+
+        return lpf.buf1 * (1.0 - mix) + hpf.hp * mix;
     }
 
     EffectFilter2& set(float value)
     {
         mix = range(value, 0.00, 1.00);
 
-         if (value > 0.5) {
+        if (value > 0.5) {
             // 0 to 0.10
-            cutoff = (0.10 * ((value - 0.5) * 2)) + 0.00707;
+            float cutoff = (0.10 * ((value - 0.5) * 2)) + 0.00707;
+            hpf.setCutoff(cutoff);
+            lpf.setCutoff(0.99);
         } else {
             // From 0.95 to 0.1
-            cutoff = 0.85 * (value * 2) + 0.1;
+            float cutoff = 0.85 * (value * 2) + 0.1;
+            hpf.setCutoff(0.00707);
+            lpf.setCutoff(cutoff);
         }
 
-        // if (value > 0.5) {
-        //     cutoff = 1 - value + 0.0707;
-        // } else {
-        //     cutoff = value + 0.05; // LPF should not be 0.0
-        // }
-
-        // debug("Filter (%f): cutoff=%f\n", value, cutoff);
-        calculateVar();
         return *this;
     }
 
     EffectFilter2& setResonance(float _res)
     {
         resonance = range(_res, 0.00, 0.99);
-        calculateVar();
+        lpf.setResonance(resonance);
+        hpf.setResonance(resonance);
 
         debug("Filter: resonance=%f\n", resonance);
 
