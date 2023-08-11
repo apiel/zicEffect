@@ -28,11 +28,29 @@ public:
     EffectDelay(AudioBuffer* _buffer)
         : buffer(_buffer)
     {
-        setVoice(0, 0.1f, 0.6f, 0.0f);
-        setVoice(1, 0.2f, 0.5f, 0.0f);
-        setVoice(2, 0.3f, 0.4f, 0.0f);
-        setVoice(3, 0.4f, 0.3f, 0.0f);
-        setVoice(4, 0.5f, 0.2f, 0.0f);
+        // setVoice(0, 0.1f, 0.6f, 0.0f);
+        // setVoice(1, 0.2f, 0.5f, 0.0f);
+        // setVoice(2, 0.3f, 0.4f, 0.0f);
+        // setVoice(3, 0.4f, 0.3f, 0.0f);
+        // setVoice(4, 0.5f, 0.2f, 0.0f);
+
+        // // make reverb
+        // setVoice(0, 0.01f, 0.9f, 0.0f);
+        // setVoice(1, 0.02f, 0.85f, 0.0f);
+        // setVoice(2, 0.03f, 0.8f, 0.0f);
+        // setVoice(3, 0.004f, 0.75f, 0.0f);
+        // setVoice(4, 0.05f, 0.7f, 0.0f);
+        // setVoice(5, 0.06f, 0.65f, 0.0f);
+        // setVoice(6, 0.07f, 0.6f, 0.0f);
+        // setVoice(7, 0.08f, 0.55f, 0.0f);
+        // setVoice(8, 0.09f, 0.5f, 0.0f);
+        // setVoice(9, 0.10f, 0.45f, 0.0f);
+        // setVoice(10, 0.11f, 0.4f, 0.0f);
+        // setVoice(11, 0.12f, 0.35f, 0.0f);
+        // setVoice(12, 0.13f, 0.3f, 0.0f);
+        // setVoice(13, 0.14f, 0.25f, 0.0f);
+        // setVoice(14, 0.15f, 0.2f, 0.0f);
+        // setVoice(15, 0.16f, 0.15f, 0.0f);
     }
 
     EffectDelay* setSec(uint8_t voiceIndex, float sec)
@@ -93,7 +111,7 @@ public:
             if (voice.index++ >= AUDIO_BUFFER_SIZE) {
                 voice.index = 0;
             }
-            if (voice.amplitude > 0.0f) {
+            if (masterAmplitude && voice.amplitude > 0.0f) {
                 delay += buffer->samples[voice.index] * voice.amplitude * masterAmplitude;
                 if (voice.feedback > 0.0f) {
                     buffer->samples[buffer->index] += delay * voice.feedback;
