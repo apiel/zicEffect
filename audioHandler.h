@@ -21,9 +21,9 @@ protected:
     }
 
 public:
-    // EffectFilter filter;
-    EffectFilter2 filter;
-    // EffectFilterMoog filter;
+    // EffectFilterMultiMode filter;
+    EffectFilterMultiMode2 filter;
+    // EffectFilterMultiModeMoog filter;
     EffectDistortion distortion;
     EffectSampleRateReducer sampleRateReducer;
     EffectDelay delay;

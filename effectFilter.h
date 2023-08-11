@@ -25,6 +25,7 @@ public:
     float buf0 = 0.0f;
     float buf1 = 0.0f;
     float hp = 0.0f;
+    float bp = 0.0f;
     float resonance = 0.0f;
 
     void setCutoff(float _cutoff)
@@ -46,7 +47,7 @@ public:
     void setSampleData(float inputValue)
     {
         hp = inputValue - buf0;
-        float bp = buf0 - buf1;
+        bp = buf0 - buf1;
 
         buf0 = buf0 + cutoff * (hp + feedback * bp);
         buf1 = buf1 + cutoff * (buf0 - buf1);
@@ -54,6 +55,71 @@ public:
 };
 
 class EffectFilter : public EffectFilterInterface {
+protected:
+    EffectFilterData data;
+
+public:
+    float resonance = 0.0;
+    float cutoff = 0.0;
+
+    enum Mode {
+        FILTER_OFF,
+        FILTER_LPF,
+        FILTER_HPF,
+        FILTER_BPF,
+        FILTER_MODE_COUNT,
+    } mode
+        = FILTER_OFF;
+
+    float sample(float inputValue)
+    {
+        if (inputValue == 0 || mode == FILTER_OFF) {
+            return inputValue;
+        }
+
+        data.setSampleData(inputValue);
+
+        if (mode == FILTER_HPF) {
+            return data.hp;
+        } else if (mode == FILTER_BPF) {
+            return data.bp;
+        }
+        // FILTER_LPF
+        return data.buf0;
+    }
+
+    EffectFilter& set(float value)
+    {
+        cutoff = range(value, 0.00, 1.00);
+
+        if (mode == FILTER_LPF) {
+            data.setCutoff(0.85 * value + 0.1);
+        } else if (mode == FILTER_BPF) {
+            data.setCutoff(0.85 * value + 0.1);
+        } else { // FILTER_HPF
+            data.setCutoff((0.20 * value) + 0.00707);
+        }
+
+        return *this;
+    }
+
+    EffectFilter& setResonance(float _res)
+    {
+        resonance = range(_res, 0.00, 0.99);
+        data.setResonance(resonance);
+
+        return *this;
+    };
+
+    EffectFilter& setMode(EffectFilter::Mode _mode)
+    {
+        mode = _mode;
+        set(cutoff);
+        return *this;
+    };
+};
+
+class EffectFilterMultiMode : public EffectFilterInterface {
 protected:
     EffectFilterData hpf;
     EffectFilterData lpf;
@@ -63,7 +129,7 @@ protected:
 public:
     float resonance = 0.0;
 
-    EffectFilter()
+    EffectFilterMultiMode()
     {
         set(0.5);
     };
@@ -80,7 +146,7 @@ public:
         return lpf.buf1 * (1.0 - mix) + hpf.hp * mix;
     }
 
-    EffectFilter& set(float value)
+    EffectFilterMultiMode& set(float value)
     {
         mix = range(value, 0.00, 1.00);
 
@@ -90,7 +156,7 @@ public:
         return *this;
     }
 
-    EffectFilter& setResonance(float _res)
+    EffectFilterMultiMode& setResonance(float _res)
     {
         resonance = range(_res, 0.00, 0.99);
         lpf.setResonance(resonance);
@@ -104,7 +170,7 @@ public:
 
 // another version of the same filter but with a small clicking at 0.5
 
-class EffectFilter2 : public EffectFilterInterface {
+class EffectFilterMultiMode2 : public EffectFilterInterface {
 protected:
     EffectFilterData hpf;
     EffectFilterData lpf;
@@ -114,7 +180,7 @@ protected:
 public:
     float resonance = 0.0;
 
-    EffectFilter2()
+    EffectFilterMultiMode2()
     {
         set(0.5);
     };
@@ -131,7 +197,7 @@ public:
         return lpf.buf1 * (1.0 - mix) + hpf.hp * mix;
     }
 
-    EffectFilter2& set(float value)
+    EffectFilterMultiMode2& set(float value)
     {
         mix = range(value, 0.00, 1.00);
 
@@ -150,7 +216,7 @@ public:
         return *this;
     }
 
-    EffectFilter2& setResonance(float _res)
+    EffectFilterMultiMode2& setResonance(float _res)
     {
         resonance = range(_res, 0.00, 0.99);
         lpf.setResonance(resonance);
@@ -164,7 +230,7 @@ public:
 
 // Paul Kellet version of the classic Stilson/Smith "Moog" filter
 // https://www.kvraudio.com/forum/viewtopic.php?t=144625
-class EffectFilterMoog : public EffectFilterInterface {
+class EffectFilterMultiModeMoog : public EffectFilterInterface {
 protected:
     float cutoff = 0.00;
     float f, p, q = 0.00;
@@ -185,7 +251,7 @@ protected:
 public:
     float resonance = 0.0;
 
-    EffectFilterMoog()
+    EffectFilterMultiModeMoog()
     {
         set(0.5);
     };
@@ -210,7 +276,7 @@ public:
         return b4 * (1.0 - mix) + (inputValue - b4) * mix;
     }
 
-    EffectFilterMoog& set(float value)
+    EffectFilterMultiModeMoog& set(float value)
     {
         mix = range(value, 0.00, 1.00);
         if (mix > 0.5) {
@@ -222,7 +288,7 @@ public:
         return *this;
     }
 
-    EffectFilterMoog& setResonance(float _res)
+    EffectFilterMultiModeMoog& setResonance(float _res)
     {
         resonance = range(_res, 0.00, 1.00) * 0.90; // resonance should be from 0.0 to 0.90, higher values is too high
         calculateVar(cutoff, resonance);

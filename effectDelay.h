@@ -3,13 +3,17 @@
 
 #include "audioBuffer.h"
 #include "def.h"
+#include "effectFilter.h"
 
 #define MAX_DELAY_VOICES 16
+
+// TODO load/save different kind of delay and reverb from a config file
+// TODO add filter on voices or on master???
+// TODO add lfo on delay time
 
 class EffectDelay {
 protected:
     AudioBuffer* buffer;
-    uint32_t delayIndex = 0;
 
     struct DelayVoice {
         uint32_t index;
@@ -25,14 +29,29 @@ public:
     float timeRatio = 1.0f;
     float masterAmplitude = 1.0f;
 
+    EffectFilterData filter;
+
+    enum {
+        FILTER_OFF,
+        FILTER_LPF,
+        FILTER_HPF,
+        FILTER_BPF,
+        FILTER_MODE_COUNT,
+    } filterMode
+        = FILTER_OFF;
+
     EffectDelay(AudioBuffer* _buffer)
         : buffer(_buffer)
     {
-        // setVoice(0, 0.1f, 0.6f, 0.0f);
-        // setVoice(1, 0.2f, 0.5f, 0.0f);
-        // setVoice(2, 0.3f, 0.4f, 0.0f);
-        // setVoice(3, 0.4f, 0.3f, 0.0f);
-        // setVoice(4, 0.5f, 0.2f, 0.0f);
+        setVoice(0, 0.1f, 0.6f, 0.0f);
+        setVoice(1, 0.2f, 0.5f, 0.0f);
+        setVoice(2, 0.3f, 0.4f, 0.0f);
+        setVoice(3, 0.4f, 0.3f, 0.0f);
+        setVoice(4, 0.5f, 0.2f, 0.0f);
+
+        filter.setCutoff(0.5f);
+        filter.setResonance(0.95f);
+        filterMode = FILTER_HPF;
 
         // // make reverb
         // setVoice(0, 0.01f, 0.9f, 0.0f);
@@ -118,6 +137,18 @@ public:
                 }
             }
         }
+
+        if (filterMode != FILTER_OFF) {
+            filter.setSampleData(delay);
+            if (filterMode == FILTER_LPF) {
+                delay = filter.buf0;
+            } else if (filterMode == FILTER_HPF) {
+                delay = filter.hp;
+            } else if (filterMode == FILTER_BPF) {
+                delay = filter.bp;
+            }
+        }
+
         return delay;
     }
 };
