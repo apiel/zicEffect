@@ -7,8 +7,6 @@
 #define AUDIO_BUFFER_SECONDS 5
 #endif
 
-// #define AUDIO_BUFFER_SIZE SAMPLE_RATE* AUDIO_BUFFER_SECONDS
-
 template <uint8_t SECONDS = AUDIO_BUFFER_SECONDS>
 class AudioBuffer {
 public:
