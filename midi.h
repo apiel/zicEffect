@@ -44,7 +44,7 @@ MidiMapping midiMappings[] = {
         AudioHandler::get().distortion.set(value);
     }),
     MidiMapping("FILTER_CUTOFF", [](float value) {
-        AudioHandler::get().filter.set(value);
+        AudioHandler::get().filter.setCutoff(value);
     }),
     MidiMapping("FILTER_RESONANCE", [](float value) {
         AudioHandler::get().filter.setResonance(value);

@@ -29,16 +29,7 @@ public:
     float timeRatio = 1.0f;
     float masterAmplitude = 1.0f;
 
-    EffectFilterData filter;
-
-    enum {
-        FILTER_OFF,
-        FILTER_LPF,
-        FILTER_HPF,
-        FILTER_BPF,
-        FILTER_MODE_COUNT,
-    } filterMode
-        = FILTER_OFF;
+    EffectFilter filter;
 
     EffectDelay(AudioBuffer* _buffer)
         : buffer(_buffer)
@@ -49,9 +40,7 @@ public:
         setVoice(3, 0.4f, 0.3f, 0.0f);
         setVoice(4, 0.5f, 0.2f, 0.0f);
 
-        filter.setCutoff(0.5f);
-        filter.setResonance(0.95f);
-        filterMode = FILTER_HPF;
+        filter.setCutoff(0.5f).setResonance(0.95f).setMode(EffectFilter::Mode::HPF);
 
         // // make reverb
         // setVoice(0, 0.01f, 0.9f, 0.0f);
@@ -138,18 +127,7 @@ public:
             }
         }
 
-        if (filterMode != FILTER_OFF) {
-            filter.setSampleData(delay);
-            if (filterMode == FILTER_LPF) {
-                delay = filter.buf0;
-            } else if (filterMode == FILTER_HPF) {
-                delay = filter.hp;
-            } else if (filterMode == FILTER_BPF) {
-                delay = filter.bp;
-            }
-        }
-
-        return delay;
+        return filter.sample(delay);
     }
 };
 

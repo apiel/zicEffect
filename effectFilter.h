@@ -10,7 +10,7 @@ public:
     float resonance = 0.0;
 
     virtual float sample(float inputValue) = 0;
-    virtual EffectFilterInterface& set(float value) = 0;
+    virtual EffectFilterInterface& setCutoff(float value) = 0;
     virtual EffectFilterInterface& setResonance(float _res) = 0;
 };
 
@@ -63,40 +63,40 @@ public:
     float cutoff = 0.0;
 
     enum Mode {
-        FILTER_OFF,
-        FILTER_LPF,
-        FILTER_HPF,
-        FILTER_BPF,
-        FILTER_MODE_COUNT,
+        OFF,
+        LPF,
+        HPF,
+        BPF,
+        MODE_COUNT,
     } mode
-        = FILTER_OFF;
+        = OFF;
 
     float sample(float inputValue)
     {
-        if (inputValue == 0 || mode == FILTER_OFF) {
+        if (inputValue == 0 || mode == OFF) {
             return inputValue;
         }
 
         data.setSampleData(inputValue);
 
-        if (mode == FILTER_HPF) {
+        if (mode == HPF) {
             return data.hp;
-        } else if (mode == FILTER_BPF) {
+        } else if (mode == BPF) {
             return data.bp;
         }
-        // FILTER_LPF
+        // LPF
         return data.buf0;
     }
 
-    EffectFilter& set(float value)
+    EffectFilter& setCutoff(float value)
     {
         cutoff = range(value, 0.00, 1.00);
 
-        if (mode == FILTER_LPF) {
+        if (mode == LPF) {
             data.setCutoff(0.85 * value + 0.1);
-        } else if (mode == FILTER_BPF) {
+        } else if (mode == BPF) {
             data.setCutoff(0.85 * value + 0.1);
-        } else { // FILTER_HPF
+        } else { // HPF
             data.setCutoff((0.20 * value) + 0.00707);
         }
 
@@ -114,7 +114,7 @@ public:
     EffectFilter& setMode(EffectFilter::Mode _mode)
     {
         mode = _mode;
-        set(cutoff);
+        setCutoff(cutoff);
         return *this;
     };
 };
@@ -131,7 +131,7 @@ public:
 
     EffectFilterMultiMode()
     {
-        set(0.5);
+        setCutoff(0.5);
     };
 
     float sample(float inputValue)
@@ -146,7 +146,7 @@ public:
         return lpf.buf1 * (1.0 - mix) + hpf.hp * mix;
     }
 
-    EffectFilterMultiMode& set(float value)
+    EffectFilterMultiMode& setCutoff(float value)
     {
         mix = range(value, 0.00, 1.00);
 
@@ -182,7 +182,7 @@ public:
 
     EffectFilterMultiMode2()
     {
-        set(0.5);
+        setCutoff(0.5);
     };
 
     float sample(float inputValue)
@@ -197,7 +197,7 @@ public:
         return lpf.buf1 * (1.0 - mix) + hpf.hp * mix;
     }
 
-    EffectFilterMultiMode2& set(float value)
+    EffectFilterMultiMode2& setCutoff(float value)
     {
         mix = range(value, 0.00, 1.00);
 
@@ -253,7 +253,7 @@ public:
 
     EffectFilterMultiModeMoog()
     {
-        set(0.5);
+        setCutoff(0.5);
     };
 
     float sample(float inputValue)
@@ -276,7 +276,7 @@ public:
         return b4 * (1.0 - mix) + (inputValue - b4) * mix;
     }
 
-    EffectFilterMultiModeMoog& set(float value)
+    EffectFilterMultiModeMoog& setCutoff(float value)
     {
         mix = range(value, 0.00, 1.00);
         if (mix > 0.5) {
