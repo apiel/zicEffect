@@ -3,33 +3,33 @@
 
 #include "def.h"
 
+#ifndef AUDIO_BUFFER_SECONDS
 #define AUDIO_BUFFER_SECONDS 5
-#define AUDIO_BUFFER_SIZE SAMPLE_RATE* AUDIO_BUFFER_SECONDS
+#endif
 
+// #define AUDIO_BUFFER_SIZE SAMPLE_RATE* AUDIO_BUFFER_SECONDS
+
+template <uint8_t SECONDS = AUDIO_BUFFER_SECONDS>
 class AudioBuffer {
 public:
-    // keep in memory current samples chunk
-    float input[APP_AUDIO_CHUNK * APP_CHANNELS];
+    const uint64_t size = SAMPLE_RATE * SECONDS;
+
     // keep in memory 5 seconds of samples
-    float samples[AUDIO_BUFFER_SIZE];
+    float samples[SAMPLE_RATE * SECONDS];
     uint32_t index = 0;
 
     AudioBuffer()
     {
-        for (int i = 0; i < AUDIO_BUFFER_SIZE; i++) {
+        for (uint64_t i = 0; i < size; i++) {
             samples[i] = 0.0;
-        }
-        for (int i = 0; i < APP_AUDIO_CHUNK * APP_CHANNELS; i++) {
-            input[i] = 0.0;
         }
     }
 
-    void addSample(float sample, uint16_t i)
+    void addSample(float sample)
     {
-        input[i] = sample;
         samples[index] = sample;
         index++;
-        if (index >= AUDIO_BUFFER_SIZE) {
+        if (index >= size) {
             index = 0;
         }
     }

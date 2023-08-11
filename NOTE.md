@@ -1,6 +1,9 @@
 # TODO
 
+- TODO implement input for alsa and pulse audio api
 - TODO reverb, delay
+     - load/save different kind of delay and reverb from a config file
+     - add lfo on time ratio
 - TODO Use the granular synth and combine it with random sample player features...
 
        Need a synth to randomly pick up a sample (giving possibilities to pick next random sample (keep order so we can come back to previous one) or let automatically the sequencer pickup and play a sample randomly every random sec) where we can then apply some granular effect on top of it...

@@ -12,7 +12,7 @@
 
 class EffectDelay {
 protected:
-    AudioBuffer* buffer;
+    AudioBuffer<>* buffer;
 
     struct DelayVoice {
         uint32_t index;
@@ -30,7 +30,7 @@ public:
 
     EffectFilter filter;
 
-    EffectDelay(AudioBuffer* _buffer)
+    EffectDelay(AudioBuffer<>* _buffer)
         : buffer(_buffer)
     {
         // setVoice(0, 0.1f, 0.6f, 0.0f);
@@ -63,7 +63,7 @@ public:
     EffectDelay* setSec(uint8_t voiceIndex, float sec)
     {
         voices[voiceIndex].sec = sec;
-        voices[voiceIndex].index = (buffer->index + AUDIO_BUFFER_SIZE - (uint32_t)(SAMPLE_RATE * sec * timeRatio)) % AUDIO_BUFFER_SIZE;
+        voices[voiceIndex].index = (buffer->index + buffer->size - (uint32_t)(SAMPLE_RATE * sec * timeRatio)) % buffer->size;
         return this;
     }
 
@@ -115,7 +115,7 @@ public:
         float delay = 0.0f;
         for (uint8_t i = 0; i < MAX_DELAY_VOICES; i++) {
             DelayVoice& voice = voices[i];
-            if (voice.index++ >= AUDIO_BUFFER_SIZE) {
+            if (voice.index++ >= buffer->size) {
                 voice.index = 0;
             }
             if (masterAmplitude && voice.amplitude > 0.0f) {

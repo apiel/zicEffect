@@ -13,7 +13,7 @@ protected:
     static AudioHandler* instance;
 
     // Keep buffer for echo, delay, granular, etc.
-    AudioBuffer buffer;
+    AudioBuffer<> buffer;
 
     AudioHandler()
         : delay(&buffer)
@@ -42,7 +42,7 @@ public:
             out[i] = filter.sample(in[i]);
             out[i] = distortion.sample(out[i]);
             out[i] = sampleRateReducer.sample(out[i]);
-            buffer.addSample(out[i], i);
+            buffer.addSample(out[i]);
 
             out[i] += delay.sample();
 
