@@ -1,96 +1,104 @@
 #ifndef _EFFECT_DELAY_H_
 #define _EFFECT_DELAY_H_
 
-#include "def.h"
 #include "audioBuffer.h"
+#include "def.h"
+
+#define MAX_DELAY_VOICES 16
 
 class EffectDelay {
 protected:
     AudioBuffer* buffer;
     uint32_t delayIndex = 0;
 
+    struct DelayVoice {
+        uint32_t index;
+        float amplitude;
+        float feedback;
+        float sec;
+    } voices[MAX_DELAY_VOICES] = {
+        { 0, 0.0f, 0.0f, 0.1f },
+    };
+
 public:
-    float sec = 0.5f;
-    float amplitude = 0.2f;
-    float feedback = 0.0f;
+    // From 0.0 to 1.0 to apply time ratio to voice in seconds
+    float timeRatio = 1.0f;
+    float masterAmplitude = 1.0f;
 
     EffectDelay(AudioBuffer* _buffer)
         : buffer(_buffer)
     {
-        // To ensure that default sets values respect range
-        set(sec, amplitude, feedback);
+        setVoice(0, 0.1f, 0.6f, 0.0f);
+        setVoice(1, 0.2f, 0.5f, 0.0f);
+        setVoice(2, 0.3f, 0.4f, 0.0f);
+        setVoice(3, 0.4f, 0.3f, 0.0f);
+        setVoice(4, 0.5f, 0.2f, 0.0f);
     }
 
-    /**
-     * @brief Set the delay time (in sec), amplitude and feedback
-     *
-     * @param _sec
-     * @param _amplitude
-     * @param _feedback
-     */
-    void set(float _sec, float _amplitude, float _feedback)
+    EffectDelay* setSec(uint8_t voiceIndex, float sec)
     {
-        setSec(_sec);
-        setAmplitude(_amplitude);
-        setFeedback(_feedback);
-    }
-
-    /**
-     * @brief Set the delay time in seconds
-     *
-     * @param _sec
-     * @return EffectDelay*
-     */
-    EffectDelay* setSec(float _sec)
-    {
-        sec = range(_sec, 0.01, (float)AUDIO_BUFFER_SECONDS);
-        delayIndex = (buffer->index + AUDIO_BUFFER_SIZE - (uint32_t)(SAMPLE_RATE * sec)) % AUDIO_BUFFER_SIZE;
+        voices[voiceIndex].sec = sec;
+        voices[voiceIndex].index = (buffer->index + AUDIO_BUFFER_SIZE - (uint32_t)(SAMPLE_RATE * sec * timeRatio)) % AUDIO_BUFFER_SIZE;
         return this;
     }
 
-    /**
-     * @brief Set the amplitude
-     *
-     * @param _amplitude
-     * @return EffectDelay*
-     */
-    EffectDelay* setAmplitude(float _amplitude)
+    EffectDelay* setAmplitude(uint8_t voiceIndex, float amplitude)
     {
-        amplitude = range(_amplitude, 0.0f, 1.0f);
+        voices[voiceIndex].amplitude = range(amplitude, 0.0f, 1.0f);
         return this;
     }
 
-    /**
-     * @brief Set the feedback
-     *
-     * @param _feedback
-     * @return EffectDelay*
-     */
-    EffectDelay* setFeedback(float _feedback)
+    EffectDelay* setFeedback(uint8_t voiceIndex, float feedback)
     {
-        feedback = range(_feedback, 0.0f, 1.0f);
+        voices[voiceIndex].feedback = range(feedback, 0.0f, 1.0f);
         return this;
     }
 
-    /**
-     * @brief return the delayed sample
-     *
-     * @return float
-     */
+    EffectDelay* setFeedback(float feedback)
+    {
+        for (uint8_t i = 0; i < MAX_DELAY_VOICES; i++) {
+            setFeedback(i, feedback);
+        }
+        return this;
+    }
+
+    EffectDelay* setVoice(uint8_t voiceIndex, float sec, float amplitude, float feedback)
+    {
+        setSec(voiceIndex, sec);
+        setAmplitude(voiceIndex, amplitude);
+        setFeedback(voiceIndex, feedback);
+        return this;
+    }
+
+    EffectDelay* setMasterAmplitude(float amplitude)
+    {
+        masterAmplitude = range(amplitude, 0.0f, 1.0f);
+        return this;
+    }
+
+    EffectDelay* setTimeRatio(float ratio)
+    {
+        timeRatio = range(ratio, 0.0f, 1.0f);
+        for (uint8_t i = 0; i < MAX_DELAY_VOICES; i++) {
+            setSec(i, voices[i].sec);
+        }
+        return this;
+    }
+
     float sample()
     {
-        if (amplitude == 0.0) {
-            return 0;
-        }
-        // float delay = (buffer->samples[(buffer->index + AUDIO_BUFFER_SIZE - (uint32_t)(SAMPLE_RATE * sec)) % AUDIO_BUFFER_SIZE] * amplitude);
-
-        if (delayIndex++ >= AUDIO_BUFFER_SIZE) {
-            delayIndex = 0;
-        }
-        float delay = (buffer->samples[delayIndex] * amplitude);
-
-        if (feedback > 0.0) {
-            buffer->samples[buffer->index] += delay * feedback;
+        float delay = 0.0f;
+        for (uint8_t i = 0; i < MAX_DELAY_VOICES; i++) {
+            DelayVoice& voice = voices[i];
+            if (voice.index++ >= AUDIO_BUFFER_SIZE) {
+                voice.index = 0;
+            }
+            if (voice.amplitude > 0.0f) {
+                delay += buffer->samples[voice.index] * voice.amplitude * masterAmplitude;
+                if (voice.feedback > 0.0f) {
+                    buffer->samples[buffer->index] += delay * voice.feedback;
+                }
+            }
         }
         return delay;
     }
