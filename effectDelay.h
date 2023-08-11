@@ -8,8 +8,7 @@
 #define MAX_DELAY_VOICES 16
 
 // TODO load/save different kind of delay and reverb from a config file
-// TODO add filter on voices or on master???
-// TODO add lfo on delay time
+// TODO add lfo on time ratio
 
 class EffectDelay {
 protected:
@@ -34,13 +33,13 @@ public:
     EffectDelay(AudioBuffer* _buffer)
         : buffer(_buffer)
     {
-        setVoice(0, 0.1f, 0.6f, 0.0f);
-        setVoice(1, 0.2f, 0.5f, 0.0f);
-        setVoice(2, 0.3f, 0.4f, 0.0f);
-        setVoice(3, 0.4f, 0.3f, 0.0f);
-        setVoice(4, 0.5f, 0.2f, 0.0f);
+        // setVoice(0, 0.1f, 0.6f, 0.0f);
+        // setVoice(1, 0.2f, 0.5f, 0.0f);
+        // setVoice(2, 0.3f, 0.4f, 0.0f);
+        // setVoice(3, 0.4f, 0.3f, 0.0f);
+        // setVoice(4, 0.5f, 0.2f, 0.0f);
 
-        filter.setCutoff(0.5f).setResonance(0.95f).setMode(EffectFilter::Mode::HPF);
+        // filter.setCutoff(0.5f).setResonance(0.95f).setMode(EffectFilter::Mode::HPF);
 
         // // make reverb
         // setVoice(0, 0.01f, 0.9f, 0.0f);
