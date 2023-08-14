@@ -162,10 +162,10 @@ protected:
     }
 
 public:
-    uint8_t density = 10;
+    uint8_t density = 4;
     float start = 0.0f;
-    float grainSize = 0.1;
-    float spray = 0.5;
+    float grainSize = 0.5;
+    float spray = 0.0;
     uint64_t delay = 0;
     uint16_t attack = 20;
     uint16_t release = 50;
