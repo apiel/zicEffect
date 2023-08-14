@@ -3,10 +3,12 @@
 
 #include "audioBuffer.h"
 #include "def.h"
+#include "fileBrowser.h"
 #include "effectDelay.h"
 #include "effectDistortion.h"
 #include "effectFilter.h"
 #include "effectSampleRateReducer.h"
+#include "synthGranular.h"
 
 class AudioHandler {
 protected:
@@ -27,6 +29,8 @@ public:
     EffectDistortion distortion;
     EffectSampleRateReducer sampleRateReducer;
     EffectDelay delay;
+    FileBrowser fileBrowser = FileBrowser("./samples");
+    SynthGranular synthGranular;
 
     static AudioHandler& get()
     {

@@ -17,6 +17,7 @@ public:
     SNDFILE* file = NULL;
 
     SynthGranular()
+    : granular(&buffer)
     {
         memset(&sfinfo, 0, sizeof(sfinfo));
         // open("samples/0_0_axxe13.wav");
@@ -45,7 +46,7 @@ public:
         }
         APP_INFO("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
 
-        sf_read_float(file, buffer, buffer.size);
+        sf_read_float(file, buffer.samples, buffer.size);
 
         return *this;
     }

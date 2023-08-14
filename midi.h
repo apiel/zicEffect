@@ -38,7 +38,13 @@ MidiMapping midiMappings[] = {
         // AudioHandler::get().audioGranular.setRelease(value);
     }),
     MidiMapping("SAMPLE_SELECTOR", [](float value) {
-        // ...
+        FileBrowser& fileBrowser = AudioHandler::get().fileBrowser;
+        uint8_t position = range(value * 127, 0, fileBrowser.count);
+        if (position != fileBrowser.position) {
+            char *file = fileBrowser.getFile(position);
+            debug("SAMPLE_SELECTOR: %f %s\n", value, file);
+            // AudioHandler::get().audioGranular.open(file);
+        }
     }),
     MidiMapping("DISTORTION", [](float value) {
         AudioHandler::get().distortion.set(value);

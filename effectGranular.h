@@ -125,7 +125,7 @@ protected:
                 // if (samplePos < buffer->size && (int64_t)grain.pos < grainSampleCount) { // is samplePos < buffer->size even necessary if start calculated properly
                 if ((int64_t)grain.pos < grain.sampleCount) {
                     grain.pos += grain.sampleStep;
-                    sample += buffer->data[samplePos] * env;
+                    sample += buffer->samples[samplePos] * env;
                 } else {
                     initGrain(grain);
                 }
