@@ -20,6 +20,7 @@ protected:
     AudioHandler()
         : delay(&buffer)
     {
+        synthGranular.open(fileBrowser.getFile(0));
     }
 
 public:
@@ -32,6 +33,8 @@ public:
     FileBrowser fileBrowser = FileBrowser("./samples");
     SynthGranular synthGranular;
 
+    float mix = 0.5;
+
     static AudioHandler& get()
     {
         if (!instance) {
@@ -43,7 +46,9 @@ public:
     void samples(float* in, float* out, int len)
     {
         for (int i = 0; i < len; i++) {
-            out[i] = filter.sample(in[i]);
+            float s = synthGranular.sample() * (1.0 - mix) + in[i] * mix;
+
+            out[i] = filter.sample(s);
             out[i] = distortion.sample(out[i]);
             out[i] = sampleRateReducer.sample(out[i]);
             buffer.addSample(out[i]);
@@ -52,6 +57,8 @@ public:
 
             out[i] *= masterVolumeWithGain;
         }
+
+        // synthGranular.granular.samples(out, len);
     }
 };
 

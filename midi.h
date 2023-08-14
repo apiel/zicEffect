@@ -41,7 +41,7 @@ MidiMapping midiMappings[] = {
         FileBrowser& fileBrowser = AudioHandler::get().fileBrowser;
         uint8_t position = range(value * 127, 0, fileBrowser.count);
         if (position != fileBrowser.position) {
-            char *file = fileBrowser.getFile(position);
+            char* file = fileBrowser.getFile(position);
             debug("SAMPLE_SELECTOR: %f %s\n", value, file);
             AudioHandler::get().synthGranular.open(file);
         }
@@ -65,46 +65,42 @@ void midiControllerCallback(double deltatime, std::vector<unsigned char>* messag
         // ignore midi clock
     } else if (message->at(0) == 0xfe) {
         // ignore active sensing
-    // } else if (message->at(0) == 0xe0) {
-    //     // Let's forward pitch bend to 4 track of midiOut
-    //     // [225,39,100] and [225,39,0]
-    //     midiOut.sendMessage(message);
-    //     message->at(0) = 0xe1;
-    //     midiOut.sendMessage(message);
-    //     message->at(0) = 0xe2;
-    //     midiOut.sendMessage(message);
-    //     message->at(0) = 0xe3;
-    //     midiOut.sendMessage(message);
+        // } else if (message->at(0) == 0xe0) {
+        //     // Let's forward pitch bend to 4 track of midiOut
+        //     // [225,39,100] and [225,39,0]
+        //     midiOut.sendMessage(message);
+        //     message->at(0) = 0xe1;
+        //     midiOut.sendMessage(message);
+        //     message->at(0) = 0xe2;
+        //     midiOut.sendMessage(message);
+        //     message->at(0) = 0xe3;
+        //     midiOut.sendMessage(message);
 
-    //     // message->at(0) = 0xe6;
-    //     // midiOut.sendMessage(message);
-    //     // message->at(0) = 0xe7;
-    //     // midiOut.sendMessage(message);
-    //     // message->at(0) = 0xe8;
-    //     // midiOut.sendMessage(message);
+        //     // message->at(0) = 0xe6;
+        //     // midiOut.sendMessage(message);
+        //     // message->at(0) = 0xe7;
+        //     // midiOut.sendMessage(message);
+        //     // message->at(0) = 0xe8;
+        //     // midiOut.sendMessage(message);
 
-    //     message->at(0) = 0xea;
-    //     midiOut.sendMessage(message);
-    //     message->at(0) = 0xeb;
-    //     midiOut.sendMessage(message);
-    //     message->at(0) = 0xec;
-    //     midiOut.sendMessage(message);
-    //     message->at(0) = 0xed;
-    //     midiOut.sendMessage(message);
+        //     message->at(0) = 0xea;
+        //     midiOut.sendMessage(message);
+        //     message->at(0) = 0xeb;
+        //     midiOut.sendMessage(message);
+        //     message->at(0) = 0xec;
+        //     midiOut.sendMessage(message);
+        //     message->at(0) = 0xed;
+        //     midiOut.sendMessage(message);
     } else if (message->at(0) >= 0x90 && message->at(0) < 0xa0) {
-        // uint8_t channel = message->at(0) - 0x90;
-        // if (channel == midiNodeChannel) {
-        // AudioHandler::get().granular.noteOn(message->at(1), message->at(2));
-        // AudioHandler::get().pitchShifter.on = message->at(2) > 0;
-        // printf("transpose %d\n", AudioHandler::get().pitchShifter.on);
-        // }
+        uint8_t channel = message->at(0) - 0x90;
+        if (channel == midiNoteChannel) {
+            AudioHandler::get().synthGranular.granular.noteOn(message->at(1), message->at(2));
+        }
     } else if (message->at(0) >= 0x80 && message->at(0) < 0x90) {
-        // uint8_t channel = message->at(0) - 0x80;
-        // if (channel == midiNodeChannel) {
-        // AudioHandler::get().granular.noteOff(message->at(1), message->at(2));
-        // AudioHandler::get().pitchShifter.on = false;
-        // printf("transpose off\n");
-        // }
+        uint8_t channel = message->at(0) - 0x80;
+        if (channel == midiNoteChannel) {
+            AudioHandler::get().synthGranular.granular.noteOff(message->at(1), message->at(2));
+        }
     } else {
         for (int i = 0; i < MIDI_MAPS; i++) {
             if (midiMappings[i].handle(message)) {

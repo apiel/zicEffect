@@ -295,32 +295,16 @@ public:
     {
         int i = 0;
 
+        for (; i < len; i++) {
+            buf[i] = 0;
+        }
+
         for (i = 0; i < len; i++) {
             buf[i] += sample();
         }
 
         return i;
     }
-
-    // int64_t samples(float* buf, int len)
-    // {
-    //     int i = 0;
-
-    //     for (; i < len; i++) {
-    //         buf[i] = 0;
-    //     }
-
-    //     for (uint8_t v = 0; v < MAX_GRAIN_VOICES; v++) {
-    //         Voice& voice = voices[v];
-    //         if (voice.note != -1) {
-    //             for (i = 0; i < len; i++) {
-    //                 buf[i] += sample(voice);
-    //             }
-    //         }
-    //     }
-
-    //     return i;
-    // }
 
     EffectGranular& noteOn(uint8_t note, uint8_t velocity)
     {

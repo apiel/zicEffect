@@ -50,6 +50,11 @@ public:
 
         return *this;
     }
+
+    float sample()
+    {
+        return granular.sample();
+    }
 };
 
 #endif
