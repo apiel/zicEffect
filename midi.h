@@ -43,7 +43,7 @@ MidiMapping midiMappings[] = {
         if (position != fileBrowser.position) {
             char *file = fileBrowser.getFile(position);
             debug("SAMPLE_SELECTOR: %f %s\n", value, file);
-            // AudioHandler::get().audioGranular.open(file);
+            AudioHandler::get().synthGranular.open(file);
         }
     }),
     MidiMapping("DISTORTION", [](float value) {

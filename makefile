@@ -4,8 +4,8 @@
 # default
 CC=g++ -o zicEffect
 
-# not used yet
-# LIDSND=`pkg-config --cflags --libs sndfile`
+# used for granular synth
+LIDSND=`pkg-config --cflags --libs sndfile`
 
 RTAUDIO=`pkg-config --cflags --libs rtaudio`
 
