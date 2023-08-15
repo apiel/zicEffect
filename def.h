@@ -65,17 +65,5 @@ void enableDebug()
 uint8_t midiNoteChannel = 0;
 char audioOutputName[255] = "";
 char audioInputName[255] = "";
-float gainOutput = 1.0f;
-float masterVolume = 1.0f;
-float masterVolumeWithGain = gainOutput * masterVolume;
-
-void setMasterVolume(float volume, float gain = gainOutput)
-{
-    gainOutput = gain;
-    masterVolume = volume;
-    masterVolumeWithGain = gainOutput * masterVolume;
-
-    debug("setMaster: volume %f\n", volume);
-}
 
 #endif

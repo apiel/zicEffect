@@ -7,6 +7,7 @@
 #include "effectDistortion.h"
 #include "effectFilter.h"
 #include "effectSampleRateReducer.h"
+#include "effectGainVolume.h"
 #include "fileBrowser.h"
 #include "synthGranular.h"
 
@@ -32,6 +33,7 @@ public:
     EffectDelay delay;
     FileBrowser fileBrowser = FileBrowser("./samples");
     SynthGranular synthGranular;
+    EffectGainVolume gainVolume;
 
     static AudioHandler& get()
     {
@@ -54,7 +56,8 @@ public:
             out[i] = delay.sample(out[i]);
 
             // use sample in out...
-            out[i] *= masterVolumeWithGain;
+            // out[i] *= masterVolumeWithGain;
+            out[i] = gainVolume.sample(out[i]);
         }
 
         // synthGranular.granular.samples(out, len);

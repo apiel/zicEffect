@@ -27,7 +27,8 @@ MidiMapping midiMappings[] = {
         // AudioHandler::get().audioGranular.setDelay(value);
     }),
     MidiMapping("MASTER_VOLUME", [](float value) {
-        setMasterVolume(value);
+        // setMasterVolume(value);
+        AudioHandler::get().gainVolume.set(value);
     }),
     MidiMapping("ENV_ATTACK", [](float value) {
         // AudioHandler::get().audioGranular.setAttack(value);

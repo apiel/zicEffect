@@ -52,8 +52,8 @@ void assignKeyValue(char* key, char* value)
         strcpy(audioInputName, value);
         APP_INFO("Audio input set: %s\n", audioInputName);
     } else if (strcmp(key, "GAIN_OUTPUT") == 0) {
-        setMasterVolume(masterVolume, atof(value));
-        APP_INFO("Gain output set: %f\n", gainOutput);
+        float gain = AudioHandler::get().gainVolume.setGain(atof(value)).gain;
+        APP_INFO("Gain output set: %f\n", gain);
     } else if (strcmp(key, "DEBUG") == 0) {
         if (strcmp(value, "true") == 0) {
             enableDebug();
