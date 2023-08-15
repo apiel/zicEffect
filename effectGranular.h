@@ -170,6 +170,8 @@ public:
     uint16_t attack = 20;
     uint16_t release = 50;
 
+    float mix = 0.5;
+
     EffectGranular(AudioBuffer<GRANULER_BUFFER_SECONDS>* buffer)
         : buffer(buffer)
     {
@@ -279,7 +281,7 @@ public:
         return *this;
     }
 
-    float sample()
+    float sample(float in)
     {
         float s = 0.0f;
         for (uint8_t v = 0; v < MAX_GRAIN_VOICES; v++) {
@@ -288,7 +290,7 @@ public:
                 s += sample(voice);
             }
         }
-        return s;
+        return s * mix + in * (1 - mix);
     }
 
     int64_t samples(float* buf, int len)
@@ -300,7 +302,7 @@ public:
         }
 
         for (i = 0; i < len; i++) {
-            buf[i] += sample();
+            buf[i] += sample(buf[i]);
         }
 
         return i;

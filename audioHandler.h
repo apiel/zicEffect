@@ -3,11 +3,11 @@
 
 #include "audioBuffer.h"
 #include "def.h"
-#include "fileBrowser.h"
 #include "effectDelay.h"
 #include "effectDistortion.h"
 #include "effectFilter.h"
 #include "effectSampleRateReducer.h"
+#include "fileBrowser.h"
 #include "synthGranular.h"
 
 class AudioHandler {
@@ -33,8 +33,6 @@ public:
     FileBrowser fileBrowser = FileBrowser("./samples");
     SynthGranular synthGranular;
 
-    float mix = 0.5;
-
     static AudioHandler& get()
     {
         if (!instance) {
@@ -46,15 +44,16 @@ public:
     void samples(float* in, float* out, int len)
     {
         for (int i = 0; i < len; i++) {
-            float s = synthGranular.sample() * (1.0 - mix) + in[i] * mix;
-
-            out[i] = filter.sample(s);
+            out[i] = in[i];
+            out[i] = synthGranular.sample(out[i]);
+            out[i] = filter.sample(out[i]);
             out[i] = distortion.sample(out[i]);
             out[i] = sampleRateReducer.sample(out[i]);
             buffer.addSample(out[i]);
 
             out[i] += delay.sample();
 
+            // use sample in out...
             out[i] *= masterVolumeWithGain;
         }
 
