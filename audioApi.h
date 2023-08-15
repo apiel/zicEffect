@@ -1,5 +1,5 @@
-#ifndef _AUDIO_H_
-#define _AUDIO_H_
+#ifndef _AUDIO_API_H_
+#define _AUDIO_API_H_
 
 class AudioApi {
 public:

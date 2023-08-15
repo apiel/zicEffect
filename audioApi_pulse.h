@@ -1,10 +1,11 @@
-#ifndef _AUDIO_API_H_
-#define _AUDIO_API_H_
+#ifndef _AUDIO_API_INTERFACE_H_
+#define _AUDIO_API_INTERFACE_H_
 
 #include <pulse/pulseaudio.h>
 #include <pulse/simple.h>
 
 #include "audioHandler.h"
+#include "audioApi.h"
 #include "def.h"
 
 static void pa_set_sink_info(pa_context* c, const pa_sink_info* i,
@@ -47,11 +48,11 @@ static void pa_context_state_callback(pa_context* context, void* userdata)
     }
 }
 
-class AudioPulse : public AudioApi {
+class AudioApiPulse : public AudioApi {
 protected:
     AudioHandler& audioHandler = AudioHandler::get();
-    static AudioPulse* instance;
-    AudioPulse() { }
+    static AudioApiPulse* instance;
+    AudioApiPulse() { }
 
     pa_mainloop* ml = NULL;
     pa_context* context = NULL;
@@ -97,17 +98,17 @@ protected:
     }
 
 public:
-    static AudioPulse& get()
+    static AudioApiPulse& get()
     {
         if (!instance) {
-            instance = new AudioPulse();
+            instance = new AudioApiPulse();
         }
         return *instance;
     }
 
     int open()
     {
-        APP_PRINT("AudioPulse::open\n");
+        APP_PRINT("AudioApiPulse::open\n");
 
         static const pa_sample_spec streamFormat = {
             .format = PA_SAMPLE_FLOAT32LE,
@@ -137,6 +138,6 @@ public:
     }
 };
 
-AudioPulse* AudioPulse::instance = NULL;
+AudioApiPulse* AudioApiPulse::instance = NULL;
 
 #endif

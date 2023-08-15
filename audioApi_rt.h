@@ -1,7 +1,7 @@
-#ifndef _AUDIO_API_H_
-#define _AUDIO_API_H_
+#ifndef _AUDIO_API_INTERFACE_H_
+#define _AUDIO_API_INTERFACE_H_
 
-#include "audio.h"
+#include "audioApi.h"
 #include "audioHandler.h"
 #include "def.h"
 
@@ -14,12 +14,12 @@ int audioCallback(void* outputBuffer, void* inputBuffer, unsigned int nBufferFra
     return 0;
 }
 
-class AudioRT : public AudioApi {
+class AudioApiRT : public AudioApi {
 protected:
     RtAudio* audio = 0;
 
-    static AudioRT* instance;
-    AudioRT()
+    static AudioApiRT* instance;
+    AudioApiRT()
     {
         audio = new RtAudio();
     }
@@ -93,10 +93,10 @@ protected:
     }
 
 public:
-    static AudioRT& get()
+    static AudioApiRT& get()
     {
         if (!instance) {
-            instance = new AudioRT();
+            instance = new AudioApiRT();
         }
         return *instance;
     }
@@ -132,6 +132,6 @@ public:
     }
 };
 
-AudioRT* AudioRT::instance = NULL;
+AudioApiRT* AudioApiRT::instance = NULL;
 
 #endif

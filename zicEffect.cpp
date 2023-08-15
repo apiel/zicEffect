@@ -1,4 +1,4 @@
-#include "audio.h"
+#include "audioApi.h"
 #include "config.h"
 #include "def.h"
 
@@ -10,14 +10,14 @@
 #endif
 
 #if AUDIO_API == AUDIO_API_PULSE
-#include "audio_pulse.h"
-AudioApi& audioApi = AudioPulse::get();
+#include "audioApi_pulse.h"
+AudioApi& audioApi = AudioApiPulse::get();
 #elif AUDIO_API == AUDIO_API_ALSA
-#include "audio_alsa.h"
-AudioApi& audioApi = AudioAlsa::get();
+#include "audioApi_alsa.h"
+AudioApi& audioApi = AudioApiAlsa::get();
 #else
-#include "audio_rt.h"
-AudioApi& audioApi = AudioRT::get();
+#include "audioApi_rt.h"
+AudioApi& audioApi = AudioApiRT::get();
 #endif
 
 int main(int argc, char* args[])

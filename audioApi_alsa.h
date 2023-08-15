@@ -1,30 +1,31 @@
-#ifndef _AUDIO_API_H_
-#define _AUDIO_API_H_
+#ifndef _AUDIO_API_INTERFACE_H_
+#define _AUDIO_API_INTERFACE_H_
 
 #include <alsa/asoundlib.h>
 
 #include "audioHandler.h"
+#include "audioApi.h"
 #include "def.h"
 
-class AudioAlsa : public AudioApi {
+class AudioApiAlsa : public AudioApi {
 protected:
     AudioHandler& audioHandler = AudioHandler::get();
 
-    static AudioAlsa* instance;
-    AudioAlsa() { }
+    static AudioApiAlsa* instance;
+    AudioApiAlsa() { }
 
 public:
-    static AudioAlsa& get()
+    static AudioApiAlsa& get()
     {
         if (!instance) {
-            instance = new AudioAlsa();
+            instance = new AudioApiAlsa();
         }
         return *instance;
     }
 
     int open()
     {
-        APP_PRINT("AudioAlsa::open\n");
+        APP_PRINT("AudioApiAlsa::open\n");
 
         snd_pcm_t* handle;
 
@@ -81,6 +82,6 @@ public:
     }
 };
 
-AudioAlsa* AudioAlsa::instance = NULL;
+AudioApiAlsa* AudioApiAlsa::instance = NULL;
 
 #endif
