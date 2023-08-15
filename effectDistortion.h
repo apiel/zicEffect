@@ -2,10 +2,11 @@
 #define _EFFECT_DISTORTION_H_
 
 #include "def.h"
+#include "audioPlugin.h"
 
 #include <math.h>
 
-class EffectDistortion {
+class EffectDistortion: public AudioPlugin {
 protected:
     float shape;
 

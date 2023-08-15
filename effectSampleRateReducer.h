@@ -2,10 +2,11 @@
 #define _EFFECT_SAMPLE_RATE_REDUCER_H_
 
 #include "def.h"
+#include "audioPlugin.h"
 
 #include <math.h>
 
-class EffectSampleRateReducer {
+class EffectSampleRateReducer: public AudioPlugin {
 protected:
     float sampleSqueeze;
     int samplePosition = 0;

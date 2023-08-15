@@ -4,13 +4,14 @@
 #include "audioBuffer.h"
 #include "def.h"
 #include "effectFilter.h"
+#include "audioPlugin.h"
 
 #define MAX_DELAY_VOICES 16
 
 // TODO load/save different kind of delay and reverb from a config file
 // TODO add lfo on time ratio
 
-class EffectDelay {
+class EffectDelay: public AudioPlugin {
 protected:
     AudioBuffer<>* buffer;
 

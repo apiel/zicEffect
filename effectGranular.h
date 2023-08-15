@@ -6,6 +6,7 @@ using namespace std;
 
 #include "audioBuffer.h"
 #include "def.h"
+#include "audioPlugin.h"
 
 #define GRANULER_BUFFER_SECONDS 30
 #define MAX_GRAINS_PER_VOICE 24
@@ -14,7 +15,7 @@ using namespace std;
 
 const uint16_t minGrainSampleCount = MIN_GRAIN_SIZE_MS * SAMPLE_RATE * 0.001f;
 
-class EffectGranular {
+class EffectGranular: public AudioPlugin {
 protected:
     AudioBuffer<GRANULER_BUFFER_SECONDS>* buffer;
 

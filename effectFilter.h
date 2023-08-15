@@ -2,10 +2,11 @@
 #define _EFFECT_FILTER_H_
 
 #include "def.h"
+#include "audioPlugin.h"
 
 #include <math.h>
 
-class EffectFilterInterface {
+class EffectFilterInterface: public AudioPlugin {
 public:
     float resonance = 0.0;
 
