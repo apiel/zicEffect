@@ -6,6 +6,7 @@
 #include "audioBuffer.h"
 #include "def.h"
 #include "effectGranular.h"
+#include "fileBrowser.h"
 
 // class SynthGranular {
 // protected:
@@ -57,19 +58,20 @@
 //     }
 // };
 
-
-class SynthGranular: public EffectGranular {
+class SynthGranular : public EffectGranular {
 protected:
     AudioBuffer<GRANULER_BUFFER_SECONDS> buffer;
+    FileBrowser fileBrowser = FileBrowser("./samples");
 
 public:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
 
     SynthGranular()
-    : EffectGranular(&buffer)
+        : EffectGranular(&buffer)
     {
         memset(&sfinfo, 0, sizeof(sfinfo));
+        open(0.0);
     }
 
     ~SynthGranular()
@@ -97,6 +99,17 @@ public:
 
         sf_read_float(file, buffer.samples, buffer.size);
 
+        return *this;
+    }
+
+    SynthGranular& open(float value)
+    {
+        uint8_t position = range(value * 127, 0, fileBrowser.count);
+        if (position != fileBrowser.position) {
+            char* file = fileBrowser.getFile(position);
+            debug("SAMPLE_SELECTOR: %f %s\n", value, file);
+            open(file);
+        }
         return *this;
     }
 };
