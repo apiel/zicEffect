@@ -44,6 +44,7 @@ public:
     {
         for (int i = 0; i < len; i++) {
             out[i] = in[i];
+            // TODO make a list of AudioPlugin and loop through them
             out[i] = synthGranular.sample(out[i]);
             out[i] = filter.sample(out[i]);
             out[i] = distortion.sample(out[i]);
