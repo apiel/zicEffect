@@ -51,7 +51,7 @@ public:
             out[i] = sampleRateReducer.sample(out[i]);
             buffer.addSample(out[i]);
 
-            out[i] += delay.sample();
+            out[i] = delay.sample(out[i]);
 
             // use sample in out...
             out[i] *= masterVolumeWithGain;

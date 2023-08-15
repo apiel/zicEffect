@@ -110,7 +110,7 @@ public:
         return this;
     }
 
-    float sample()
+    float sample(float in)
     {
         float delay = 0.0f;
         for (uint8_t i = 0; i < MAX_DELAY_VOICES; i++) {
@@ -126,7 +126,7 @@ public:
             }
         }
 
-        return filter.sample(delay);
+        return in + filter.sample(delay);
     }
 };
 
