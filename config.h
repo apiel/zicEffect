@@ -44,6 +44,7 @@ void assignKeyValue(char* key, char* value)
     if (strcmp(key, "MIDIIN") == 0) {
         loadMidiInput(midiController, value, &midiControllerCallback);
     } else if (strcmp(key, "MIDIOUT") == 0) {
+        // NOTE note used for the moments...
         loadMidiOutput(midiOut, value);
     } else if (strcmp(key, "AUDIO_OUTPUT") == 0) {
         strcpy(audioOutputName, value);

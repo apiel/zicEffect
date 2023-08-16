@@ -10,35 +10,15 @@ RtMidiIn midiController;
 RtMidiOut midiOut;
 
 MidiMapping midiMappings[] = {
-    MidiMapping("GRAIN_START_POSITION", [](float value) {
-        // AudioHandler::get().audioGranular.setStart(value);
-        // AudioHandler::get().filter.set(value);
-    }),
-    MidiMapping("GRAIN_DENSIY", [](float value) {
-        // AudioHandler::get().audioGranular.setDensity(value);
-    }),
-    MidiMapping("GRAIN_SIZE", [](float value) {
-        // AudioHandler::get().audioGranular.setGrainSize(value);
-    }),
-    MidiMapping("GRAIN_SPRAY", [](float value) {
-        // AudioHandler::get().audioGranular.setSpray(value);
-    }),
-    MidiMapping("GRAIN_DELAY", [](float value) {
-        // AudioHandler::get().audioGranular.setDelay(value);
-    }),
     MidiMapping("MASTER_VOLUME", [](float value) {
-        // setMasterVolume(value);
         AudioHandler::get().gainVolume.set(value);
     }),
-    MidiMapping("ENV_ATTACK", [](float value) {
+    MidiMapping("SAMPLE_RATE_REDUCER", [](float value) {
         // AudioHandler::get().audioGranular.setAttack(value);
         AudioHandler::get().sampleRateReducer.set(value);
         printf("sampleStep %d\n", AudioHandler::get().sampleRateReducer.sampleStep);
     }),
-    MidiMapping("ENV_RELEASE", [](float value) {
-        // AudioHandler::get().audioGranular.setRelease(value);
-    }),
-    MidiMapping("SAMPLE_SELECTOR", [](float value) {
+    MidiMapping("GRANULAR_SAMPLE_SELECTOR", [](float value) {
         AudioHandler::get().synthGranular.open(value);
     }),
     MidiMapping("DISTORTION", [](float value) {
@@ -60,32 +40,6 @@ void midiControllerCallback(double deltatime, std::vector<unsigned char>* messag
         // ignore midi clock
     } else if (message->at(0) == 0xfe) {
         // ignore active sensing
-        // } else if (message->at(0) == 0xe0) {
-        //     // Let's forward pitch bend to 4 track of midiOut
-        //     // [225,39,100] and [225,39,0]
-        //     midiOut.sendMessage(message);
-        //     message->at(0) = 0xe1;
-        //     midiOut.sendMessage(message);
-        //     message->at(0) = 0xe2;
-        //     midiOut.sendMessage(message);
-        //     message->at(0) = 0xe3;
-        //     midiOut.sendMessage(message);
-
-        //     // message->at(0) = 0xe6;
-        //     // midiOut.sendMessage(message);
-        //     // message->at(0) = 0xe7;
-        //     // midiOut.sendMessage(message);
-        //     // message->at(0) = 0xe8;
-        //     // midiOut.sendMessage(message);
-
-        //     message->at(0) = 0xea;
-        //     midiOut.sendMessage(message);
-        //     message->at(0) = 0xeb;
-        //     midiOut.sendMessage(message);
-        //     message->at(0) = 0xec;
-        //     midiOut.sendMessage(message);
-        //     message->at(0) = 0xed;
-        //     midiOut.sendMessage(message);
     } else if (message->at(0) >= 0x90 && message->at(0) < 0xa0) {
         uint8_t channel = message->at(0) - 0x90;
         if (channel == midiNoteChannel) {

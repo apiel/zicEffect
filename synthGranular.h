@@ -107,7 +107,7 @@ public:
         uint8_t position = range(value * 127, 0, fileBrowser.count);
         if (position != fileBrowser.position) {
             char* file = fileBrowser.getFile(position);
-            debug("SAMPLE_SELECTOR: %f %s\n", value, file);
+            debug("GRANULAR_SAMPLE_SELECTOR: %f %s\n", value, file);
             open(file);
         }
         return *this;
