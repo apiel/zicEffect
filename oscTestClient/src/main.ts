@@ -17,3 +17,4 @@ function midi(value: number) {
 }
 
 udpPort.send({ address: '/midi', args: [midi(0xb0), midi(0x48), midi(0x10)] });
+udpPort.send({ address: '/midi', args: [midi(0xc0), midi(0x48)] });
