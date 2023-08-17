@@ -23,21 +23,22 @@ char* trimChar(char* str, char c = '\n')
 void assignMidiMapping(MidiMapping& map, char* value)
 {
     // split value by space
-    char* msg1 = strtok(value, " ");
+    char* msg0 = strtok(value, " ");
+    char* msg1 = strtok(NULL, " ");
     char* msg2 = strtok(NULL, " ");
-    char* msg3 = strtok(NULL, " ");
 
-    if (msg1 == NULL || msg2 == NULL) {
+    if (msg0 == NULL || msg1 == NULL) {
         APP_INFO("Invalid midi mapping\n");
         return;
     }
 
-    map.size = msg3 == NULL ? 2 : 3;
-    map.valuePosition = msg2[0] == 'x' && msg2[1] == 'x' ? 2 : 3;
-    map.msg[0] = (uint8_t)strtol(msg1, NULL, 16);
-    map.msg[1] = (uint8_t)strtol(msg2, NULL, 16);
+    uint8_t size = msg2 == NULL ? 2 : 3;
+    uint8_t valuePosition = msg1[0] == 'x' && msg1[1] == 'x' ? 2 : 3;
+    uint8_t msg0Int = strtol(msg0, NULL, 16);
+    uint8_t msg1Int = strtol(msg1, NULL, 16);
+    map.set(size, valuePosition, msg0Int, msg1Int);
 
-    APP_INFO("Midi mapping: %02x %02x, size: %d valuePosition: %d\n", map.msg[0], map.msg[1], map.size, map.valuePosition);
+    APP_INFO("Midi mapping: %02x %02x, size: %d valuePosition: %d\n", msg0Int, msg1Int, size, valuePosition);
 }
 
 void assignKeyValue(char* key, char* value)
