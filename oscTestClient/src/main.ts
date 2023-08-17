@@ -1,6 +1,6 @@
-const osc = require('osc');
+import { UDPPort } from 'osc';
 
-var udpPort = new osc.UDPPort({
+var udpPort = new UDPPort({
     remoteAddress: '127.0.0.1',
     remotePort: 8000,
     metadata: true,
