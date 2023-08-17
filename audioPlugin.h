@@ -6,6 +6,7 @@
 class AudioPlugin {
 public:
     // TODO add midi mapping: cc, noteon, noteoff...
+    // TODO add osc mapping
     // TODO add config, e.g.: gainOutput
 
     virtual float sample(float in) = 0;
