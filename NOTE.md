@@ -1,5 +1,6 @@
 # TODO
 
+- TODO make it base on plugin and the maybe call it zicContainer or zicHost :p
 - TODO implement input for alsa and pulse audio api
 - TODO reverb, delay
      - load/save different kind of delay and reverb from a config file

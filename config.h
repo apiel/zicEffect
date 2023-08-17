@@ -4,6 +4,7 @@
 #include "def.h"
 #include "fs.h"
 #include "midi.h"
+#include "osc.h"
 
 #define CONFIG_FILE "./config.cfg"
 
@@ -52,9 +53,14 @@ void assignKeyValue(char* key, char* value)
     } else if (strcmp(key, "AUDIO_INPUT") == 0) {
         strcpy(audioInputName, value);
         APP_INFO("Audio input set: %s\n", audioInputName);
+    } else if (strcmp(key, "OSC_SERVER_PORT") == 0) {
+        oscServerStart(value);
     } else if (strcmp(key, "GAIN_OUTPUT") == 0) {
         float gain = AudioHandler::get().gainVolume.setGain(atof(value)).gain;
         APP_INFO("Gain output set: %f\n", gain);
+    } else if (strcmp(key, "MIDI_NOTE_CHANNEL") == 0) {
+        midiNoteChannel = atoi(value);
+        APP_INFO("Midi note channel set: %d\n", midiNoteChannel);
     } else if (strcmp(key, "DEBUG") == 0) {
         if (strcmp(value, "true") == 0) {
             enableDebug();

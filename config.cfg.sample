@@ -6,7 +6,7 @@ GAIN_OUTPUT=20.0
 # Midi input
 MIDIIN=Elektron Digitone MIDI 1
 # Channel where midi notes are sent
-MIDI_NOTES_CHANNEL=0
+MIDI_NOTE_CHANNEL=0
 # Set sample rate reducer steps
 SAMPLE_RATE_REDUCER=b0 4a xx
 # set master volume
