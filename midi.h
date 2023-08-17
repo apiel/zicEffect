@@ -14,9 +14,7 @@ MidiMapping midiMappings[] = {
         AudioHandler::get().gainVolume.set(value);
     }),
     MidiMapping("SAMPLE_RATE_REDUCER", [](float value) {
-        // AudioHandler::get().audioGranular.setAttack(value);
         AudioHandler::get().sampleRateReducer.set(value);
-        printf("sampleStep %d\n", AudioHandler::get().sampleRateReducer.sampleStep);
     }),
     MidiMapping("GRANULAR_SAMPLE_SELECTOR", [](float value) {
         AudioHandler::get().synthGranular.open(value);
