@@ -32,7 +32,7 @@ MidiMapping midiMappings[] = {
 
 const uint8_t MIDI_MAPS = sizeof(midiMappings) / sizeof(midiMappings[0]);
 
-void midiControllerCallback(double deltatime, std::vector<unsigned char>* message, void* userData)
+void midiControllerCallback(double deltatime, std::vector<unsigned char>* message, void* userData = NULL)
 {
     if (message->at(0) == 0xf8) {
         // ignore midi clock

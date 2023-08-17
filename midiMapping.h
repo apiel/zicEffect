@@ -3,6 +3,7 @@
 
 #include "def.h"
 
+// FIXME make those if statement using function pointers...
 class MidiMapping {
 protected:
     bool isValid(std::vector<unsigned char>* message)
